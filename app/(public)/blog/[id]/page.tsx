@@ -21,7 +21,20 @@ async function getBlogPost(id: string): Promise<BlogPost | null> {
   const post = await prisma.post.findUnique({
     where: { id }
   });
-  return post;
+  
+  if (!post) return null;
+
+  // Transform the post data to match BlogPost interface
+  return {
+    id: post.id,
+    title: post.title,
+    content: post.content,
+    excerpt: post.excerpt || '',  // Provide default empty string if null
+    category: post.category || 'Uncategorized',  // Provide default category if null
+    image: post.image,
+    createdAt: post.createdAt,
+    author: post.author
+  };
 }
 
 async function getRelatedPosts(category: string, currentId: string): Promise<BlogPost[]> {
