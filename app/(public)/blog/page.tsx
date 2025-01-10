@@ -1,36 +1,39 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
-import { BookOpen, Star, Clock, ArrowRight } from "lucide-react";
+import Link from "next/link";
+import { BookOpen, Star, Clock, ArrowRight, Plus } from "lucide-react";
 
-const blogPosts = [
-  {
-    title: "Building Meaningful Connections in the Digital Age",
-    excerpt: "Discover how Slush is revolutionizing the way people connect and share experiences in today's digital world.",
-    date: "May 15, 2024",
-    readTime: "5 min read",
-    category: "Community",
-    image: "/images/Video Date with Like-Minded Singles.png"
-  },
-  {
-    title: "The Future of Social Events",
-    excerpt: "Exploring how technology is shaping the future of social gatherings and community building.",
-    date: "May 12, 2024",
-    readTime: "4 min read",
-    category: "Technology",
-    image: "/images/Video Date with Like-Minded Singles.png"
-  },
-  {
-    title: "Creating Unforgettable Experiences",
-    excerpt: "Tips and insights on how to create memorable events that bring people together.",
-    date: "May 10, 2024",
-    readTime: "6 min read",
-    category: "Events",
-    image: "/images/Video Date with Like-Minded Singles.png"
-  }
-];
+interface BlogPost {
+  id: string;
+  title: string;
+  excerpt: string;
+  category: string;
+  image: string;
+  createdAt: string;
+  author: string;
+}
 
 export default function BlogPage() {
+  const [posts, setPosts] = useState<BlogPost[]>([]);
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const response = await fetch("/api/blog");
+        if (response.ok) {
+          const data = await response.json();
+          setPosts(data);
+        }
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+      }
+    };
+
+    fetchPosts();
+  }, []);
+
   return (
     <div className="relative">
       {/* Hero Header Section */}
@@ -64,6 +67,13 @@ export default function BlogPage() {
           <p className="text-xl text-white/90 max-w-2xl mx-auto">
             Insights, stories, and updates from the Slush community
           </p>
+          <Link 
+            href="/blog/manage" 
+            className="inline-flex items-center gap-2 mt-6 bg-white text-blue-600 px-6 py-2 rounded-full hover:bg-blue-50 transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            Write a Post
+          </Link>
         </div>
       </div>
 
@@ -80,9 +90,9 @@ export default function BlogPage() {
 
         {/* Blog Posts Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pb-20">
-          {blogPosts.map((post, i) => (
+          {posts.map((post) => (
             <div 
-              key={i}
+              key={post.id}
               className="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden"
             >
               <div className="relative h-48 overflow-hidden">
@@ -91,7 +101,6 @@ export default function BlogPage() {
                   alt={post.title}
                   fill
                   className="object-cover transform group-hover:scale-110 transition-transform duration-300"
-                  priority={i === 0}
                   sizes="(max-width: 768px) 100vw, 33vw"
                 />
               </div>
@@ -99,17 +108,24 @@ export default function BlogPage() {
                 <div className="flex items-center gap-4 mb-4">
                   <span className="text-sm text-blue-500">{post.category}</span>
                   <span className="text-sm text-gray-500">•</span>
-                  <span className="text-sm text-gray-500">{post.readTime}</span>
+                  <span className="text-sm text-gray-500">
+                    {new Date(post.createdAt).toLocaleDateString()}
+                  </span>
                 </div>
                 <h3 className="text-xl font-semibold mb-3 group-hover:text-blue-500 transition-colors">
                   {post.title}
                 </h3>
                 <p className="text-gray-600 mb-4 line-clamp-2">{post.excerpt}</p>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-500">{post.date}</span>
-                  <button className="text-blue-500 hover:text-blue-600 flex items-center gap-1 text-sm font-medium">
+                  <span className="text-sm text-gray-500">
+                    By {post.author}
+                  </span>
+                  <Link 
+                    href={`/blog/${post.id}`}
+                    className="text-blue-500 hover:text-blue-600 flex items-center gap-1 text-sm font-medium"
+                  >
                     Read more <ArrowRight className="w-4 h-4" />
-                  </button>
+                  </Link>
                 </div>
               </div>
             </div>

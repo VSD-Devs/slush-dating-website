@@ -4,8 +4,16 @@ import { ChevronDown, Apple, Play, Menu } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { Footer } from "@/components/sections/footer";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { Button } from "@/components/ui/button";
+
+function LoadingFallback() {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+    </div>
+  );
+}
 
 export default function PublicLayout({
   children,
@@ -21,8 +29,8 @@ export default function PublicLayout({
   };
 
   return (
-    <main className="flex min-h-screen flex-col overflow-x-hidden">
-      <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b">
+    <div className="min-h-screen flex flex-col">
+      <nav className="sticky top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b">
         <div className="container mx-auto px-4 py-3 flex items-center">
           <Link href="/" className="flex items-center flex-shrink-0">
             <Image 
@@ -34,29 +42,14 @@ export default function PublicLayout({
               priority
             />
           </Link>
-          
-          <div className="hidden md:flex items-center justify-center flex-grow gap-2 mx-4">
-            <Link href="https://apps.apple.com/gb/app/slush-video-date/id1590373700?itscg=30200&itsct=apps_box_link&mttnsubad=1590373700" target="_blank" rel="noopener noreferrer">
-              <Button size="sm" className="flex items-center gap-1 bg-blue-500 hover:bg-blue-600">
-                <Apple className="h-4 w-4" />
-                <span className="hidden lg:inline">Download for</span> iOS
-              </Button>
-            </Link>
-            <Link href="https://play.google.com/store/apps/details?id=com.slushdating.slush&pli=1" target="_blank" rel="noopener noreferrer">
-              <Button size="sm" className="flex items-center gap-1 bg-black hover:bg-gray-800">
-                <Play className="h-4 w-4" />
-                <span className="hidden lg:inline">Download for</span> Android
-              </Button>
-            </Link>
-          </div>
 
-          <div className="hidden md:flex items-center gap-6 flex-shrink-0">
-            <Link href="/team" className="text-sm hover:text-blue-500">Meet the Team</Link>
-            <Link href="/blog" className="text-sm hover:text-blue-500">Blog</Link>
-            <Link href="/contact" className="text-sm hover:text-blue-500">Contact Us</Link>
+          <div className="hidden md:flex items-center justify-center flex-grow gap-6 mx-4">
+            <Link href="/team" className="text-sm font-medium text-gray-600 hover:text-gray-900">Meet the Team</Link>
+            <Link href="/blog" className="text-sm font-medium text-gray-600 hover:text-gray-900">Blog</Link>
+            <Link href="/contact" className="text-sm font-medium text-gray-600 hover:text-gray-900">Contact</Link>
             <div className="relative">
               <button 
-                className="text-sm hover:text-blue-500 flex items-center gap-1"
+                className="text-sm font-medium text-gray-600 hover:text-gray-900 flex items-center gap-1"
                 onClick={() => setIsHelpOpen(!isHelpOpen)}
               >
                 Help
@@ -95,6 +88,21 @@ export default function PublicLayout({
                 </div>
               )}
             </div>
+          </div>
+
+          <div className="hidden md:flex items-center gap-2">
+            <Link href="https://apps.apple.com/gb/app/slush-video-date/id1590373700?itscg=30200&itsct=apps_box_link&mttnsubad=1590373700" target="_blank" rel="noopener noreferrer">
+              <Button size="sm" className="flex items-center gap-1 bg-blue-500 hover:bg-blue-600">
+                <Apple className="h-4 w-4" />
+                <span className="hidden lg:inline">Download for</span> iOS
+              </Button>
+            </Link>
+            <Link href="https://play.google.com/store/apps/details?id=com.slushdating.slush&pli=1" target="_blank" rel="noopener noreferrer">
+              <Button size="sm" className="flex items-center gap-1 bg-black hover:bg-gray-800">
+                <Play className="h-4 w-4" />
+                <span className="hidden lg:inline">Download for</span> Android
+              </Button>
+            </Link>
           </div>
 
           {/* Mobile Actions */}
@@ -186,11 +194,13 @@ export default function PublicLayout({
         )}
       </nav>
 
-      <div className="mt-16">
-        {children}
-      </div>
-      
+      <main className="flex-1">
+        <Suspense fallback={<LoadingFallback />}>
+          {children}
+        </Suspense>
+      </main>
+
       <Footer />
-    </main>
+    </div>
   );
 } 

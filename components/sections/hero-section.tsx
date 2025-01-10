@@ -34,7 +34,7 @@ export function HeroSection() {
               Video
             </h1>
             <p className="mt-4 sm:mt-6 text-base sm:text-lg text-gray-600 max-w-xl mx-auto lg:mx-0">
-              Created by founders who found love on dating apps, we're revolutionizing online dating with authentic video connections. No filters, no endless texting – just real people having meaningful conversations.
+              No filters, no endless texting – just real people having meaningful conversations.
             </p>
             <div className="mt-6 sm:mt-8 flex justify-center lg:justify-start">
               <DownloadCTA size="lg" />

@@ -1,25 +1,12 @@
-import './globals.css';
-import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-import { AuthProvider } from '@/components/providers/auth-provider';
+import ClientLayout from './client-layout';
+import { metadata } from './metadata';
 
-const inter = Inter({ subsets: ['latin'] });
-
-export const metadata: Metadata = {
-  title: 'Slush - Video Speed Dating',
-  description: 'Connect in real time with video dating',
-};
+export { metadata };
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <html lang="en">
-      <body className={inter.className}>
-        <AuthProvider>{children}</AuthProvider>
-      </body>
-    </html>
-  );
-}
+  return <ClientLayout>{children}</ClientLayout>;
+} 

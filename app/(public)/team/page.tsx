@@ -47,7 +47,7 @@ export default function TeamPage() {
         
         {/* Header Content */}
         <div className="container mx-auto px-4 py-16 text-center relative z-10">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">Meet Our Team</h1>
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">Meet The Team</h1>
           <div className="w-24 h-1 bg-white/80 mx-auto mb-6"></div>
           <p className="text-xl text-white/90 max-w-2xl mx-auto">
             The passionate innovators behind Slush, dedicated to transforming how people connect through video dating.
