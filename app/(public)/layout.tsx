@@ -85,6 +85,13 @@ export default function PublicLayout({
                   >
                     Community Guidelines
                   </Link>
+                  <Link 
+                    href="/child-safety" 
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
+                    onClick={closeMenus}
+                  >
+                    Child Protection Policy
+                  </Link>
                 </div>
               )}
             </div>
@@ -187,6 +194,13 @@ export default function PublicLayout({
                   onClick={closeMenus}
                 >
                   Community Guidelines
+                </Link>
+                <Link 
+                  href="/child-safety" 
+                  className="text-sm hover:text-blue-500 py-2"
+                  onClick={closeMenus}
+                >
+                  Child Protection Policy
                 </Link>
               </div>
             </div>

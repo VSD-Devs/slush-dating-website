@@ -82,6 +82,11 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/child-safety" className="text-sm text-gray-600 hover:text-blue-500">
+                  Child Protection Policy
+                </Link>
+              </li>
+              <li>
                 <Link href="/cookies" className="text-sm text-gray-600 hover:text-blue-500">
                   Cookie Policy
                 </Link>

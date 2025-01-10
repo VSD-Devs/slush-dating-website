@@ -22,9 +22,10 @@ const helpCategories = [
   {
     title: "Community",
     articles: [
-      { title: "Community guidelines", link: "#" },
-      { title: "Building connections", link: "#" },
-      { title: "Safety and privacy", link: "#" }
+      { title: "Community guidelines", link: "/guidelines" },
+      { title: "Child Protection Policy", link: "/child-safety" },
+      { title: "Safety and privacy", link: "/privacy" },
+      { title: "Building connections", link: "#" }
     ]
   },
   {
