@@ -25,9 +25,8 @@ function VideoSection({ src }: { src: string }) {
         loop 
         muted
         playsInline
-        preload="auto"
+        preload="metadata"
       >
-        <source src={src} type="video/quicktime" />
         <source src={src} type="video/mp4" />
         Your browser does not support the video tag.
       </video>
@@ -94,8 +93,8 @@ export function HeroSection() {
               
               <div className="relative h-full w-full p-3 sm:p-4">
                 <div className="relative h-full w-full rounded-2xl overflow-hidden border border-white/20 shadow-inner grid grid-rows-2 gap-2">
-                  <VideoSection src="/dreamstime_184522792.mov" />
-                  <VideoSection src="/dreamstime_220038020 (1).mov" />
+                  <VideoSection src="/dreamstime_184522792.mp4" />
+                  <VideoSection src="/dreamstime_220038020 (1).mp4" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none" />
                 </div>
               </div>
