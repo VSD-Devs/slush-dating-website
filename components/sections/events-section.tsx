@@ -118,7 +118,7 @@ export function EventsSection() {
         {/* Download CTA */}
         <div className="text-center mb-16">
           <h3 className="text-white text-xl md:text-2xl font-semibold mb-6">
-            Download Slush to Join These Events
+            Download Slush
           </h3>
           <DownloadCTA centered size="lg" variant="white" />
         </div>

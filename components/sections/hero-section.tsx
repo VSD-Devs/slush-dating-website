@@ -3,12 +3,44 @@
 import { MessageCircle, Heart, Video as VideoIcon } from "lucide-react";
 import Image from "next/image";
 import { DownloadCTA } from "@/components/download-cta";
+import dynamic from "next/dynamic";
+import { Suspense } from "react";
+
+const Timer = dynamic(() => import("@/components/timer"), {
+  ssr: false,
+});
 
 const userAvatars = [
-  "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&q=80", // Professional woman smiling
-  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&q=80", // Young man with a warm smile
-  "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&h=200&q=80", // Business woman looking confident
+  "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&q=80",
+  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&q=80",
+  "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&h=200&q=80",
 ];
+
+function VideoSection({ src }: { src: string }) {
+  return (
+    <div className="relative w-full h-full overflow-hidden">
+      <video 
+        className="w-full h-full object-cover"
+        autoPlay 
+        loop 
+        muted
+        playsInline
+        preload="auto"
+      >
+        <source src={src} type="video/quicktime" />
+        <source src={src} type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+      <Suspense fallback={
+        <div className="absolute top-2 right-2 bg-black/50 backdrop-blur-sm px-3 py-1 rounded-full text-white font-medium text-sm">
+          3:00
+        </div>
+      }>
+        <Timer />
+      </Suspense>
+    </div>
+  );
+}
 
 export function HeroSection() {
   return (
@@ -61,20 +93,10 @@ export function HeroSection() {
               <div className="absolute inset-0 bg-gradient-to-br from-blue-50/90 to-purple-50/90 backdrop-blur-sm" />
               
               <div className="relative h-full w-full p-3 sm:p-4">
-                <div className="relative h-full w-full rounded-2xl overflow-hidden border border-white/20 shadow-inner">
-                  <video 
-                    className="w-full h-full object-cover"
-                    autoPlay 
-                    loop 
-                    muted
-                    playsInline
-                    poster="/video-poster.jpg"
-                  >
-                    <source src="/hero-video.mp4" type="video/mp4" />
-                    Your browser does not support the video tag.
-                  </video>
-
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
+                <div className="relative h-full w-full rounded-2xl overflow-hidden border border-white/20 shadow-inner grid grid-rows-2 gap-2">
+                  <VideoSection src="/dreamstime_184522792.mov" />
+                  <VideoSection src="/dreamstime_220038020 (1).mov" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none" />
                 </div>
               </div>
             </div>

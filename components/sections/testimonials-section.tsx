@@ -8,19 +8,25 @@ import { useState } from "react";
 const testimonials = [
   {
     id: 1,
-    names: "Tina and Davis",
-    story: "Before They Built Their Tiny House Together, Tina and Davis Met on Slush",
-    image: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=800",
-    tag: "Real love talk"
+    names: "Emma & James",
+    story: "\"We matched on Slush after both answering 'What book changed your life?' Emma's profile caught my eye with her answer about Murakami. A year of book-swapping dates later, we moved in together and opened our own little bookshop cafe.\"",
+    image: "/testimonials/couple-1.jpg",
+    tag: "Found love through literature"
   },
   {
     id: 2,
-    names: "Sarah and Mike",
-    story: "From Coffee Shop to Wedding Chapel: Sarah and Mike's Slush Journey",
-    image: "https://images.unsplash.com/photo-1520880867055-1e30d1cb001c?w=800",
-    tag: "Success story"
+    names: "Alex & Maya",
+    story: "\"I almost didn't message Maya on Slush, thinking she was out of my league. Her prompt about debugging at 3 AM made me laugh. Six months of virtual coffee dates later, we met at a tech conference. Now we're co-founding our second startup together.\"",
+    image: "/testimonials/couple-2.jpg",
+    tag: "Connected through code"
   },
-  // Add more testimonials as needed
+  {
+    id: 3,
+    names: "David & Sophie",
+    story: "\"Sophie's Slush profile had this hilarious take on pineapple on pizza. We started chatting about controversial food opinions, which led to our first date cooking together. Two years later, we host weekly supper clubs and just got engaged at our favorite restaurant.\"",
+    image: "/testimonials/couple-3.jpg",
+    tag: "Bonded over food"
+  }
 ];
 
 export function TestimonialsSection() {
@@ -75,11 +81,15 @@ export function TestimonialsSection() {
                 <h3 className="text-xl sm:text-2xl font-semibold text-gray-900">
                   {testimonials[activeSlide].names}
                 </h3>
-                <p className="text-2xl sm:text-3xl font-bold leading-tight">
-                  {testimonials[activeSlide].story}
-                </p>
+                <div className="relative">
+                  <span className="absolute -left-4 -top-4 text-4xl text-blue-200">"</span>
+                  <p className="text-lg sm:text-xl font-normal leading-relaxed text-gray-600 italic">
+                    {testimonials[activeSlide].story}
+                  </p>
+                  <span className="absolute -bottom-4 right-0 text-4xl text-blue-200">"</span>
+                </div>
                 <div className="inline-block">
-                  <span className="text-blue-500 font-script text-xl">
+                  <span className="text-blue-500 text-sm font-medium">
                     {testimonials[activeSlide].tag}
                   </span>
                 </div>
@@ -89,8 +99,12 @@ export function TestimonialsSection() {
                 <Image
                   src={testimonials[activeSlide].image}
                   alt={testimonials[activeSlide].names}
-                  fill
-                  className="object-cover"
+                  width={500}
+                  height={500}
+                  quality={95}
+                  priority={activeSlide === 0}
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className="object-cover w-full h-full"
                 />
               </div>
             </div>
