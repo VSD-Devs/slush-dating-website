@@ -60,9 +60,9 @@ export function FeaturesSection() {
               },
               {
                 icon: MessageSquare,
-                title: "Smart Matching System",
-                description: "Our AI-powered matching system helps you find compatible partners based on shared interests and values. Plus, get personalized conversation starters.",
-                highlights: ["AI-Powered Matching", "Compatibility Scoring", "Guided Communication"]
+                title: "Instant Chat",
+                description: "Connect instantly with your matches through our real-time chat system. Share messages, reactions, and build meaningful conversations at your own pace.",
+                highlights: ["Real-time Messaging", "Media Sharing", "Expressive Reactions"]
               }
             ].map((feature, i) => (
               <div key={i} className="group" itemScope itemProp="hasOfferCatalog" itemType="https://schema.org/OfferCatalog">

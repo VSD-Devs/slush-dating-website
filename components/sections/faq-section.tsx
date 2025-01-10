@@ -194,7 +194,7 @@ export function FAQSection() {
                   itemProp="mainEntity"
                   itemType="https://schema.org/Question"
                 >
-                  <AccordionTrigger className="px-6 py-4 hover:no-underline transition-all duration-200 hover:bg-white/[0.04] data-[state=open]:bg-white/[0.04]">
+                  <AccordionTrigger className="px-6 py-4 hover:no-underline transition-all duration-200 hover:bg-white/[0.04] data-[state=open]:bg-white/[0.04] [&>svg]:text-white">
                     <span className="text-left font-semibold text-blue-50 group-hover:text-white transition-colors duration-200" itemProp="name">
                       {faq.question}
                     </span>
