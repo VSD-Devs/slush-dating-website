@@ -6,8 +6,8 @@ declare global {
 
 const prismaConfig: Prisma.PrismaClientOptions = {
   log: process.env.NODE_ENV === 'development' 
-    ? ['query', 'error', 'warn'] as const
-    : ['error'] as const,
+    ? ['query', 'error', 'warn'] as Prisma.LogLevel[]
+    : ['error'] as Prisma.LogLevel[],
   datasources: {
     db: {
       url: process.env.DATABASE_URL
