@@ -17,6 +17,19 @@ interface BlogPost {
   author: string;
 }
 
+interface DbPost {
+  id: string;
+  title: string;
+  content: string;
+  excerpt: string | null;
+  category: string | null;
+  image: string | null;
+  published: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  author: string;
+}
+
 async function getBlogPost(id: string): Promise<BlogPost | null> {
   const post = await prisma.post.findUnique({
     where: { id }
@@ -48,7 +61,18 @@ async function getRelatedPosts(category: string, currentId: string): Promise<Blo
       createdAt: 'desc'
     }
   });
-  return posts;
+
+  // Transform the posts data to match BlogPost interface
+  return posts.map((post: DbPost) => ({
+    id: post.id,
+    title: post.title,
+    content: post.content,
+    excerpt: post.excerpt || '',  // Provide default empty string if null
+    category: post.category || 'Uncategorized',  // Provide default category if null
+    image: post.image,
+    createdAt: post.createdAt,
+    author: post.author
+  }));
 }
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
