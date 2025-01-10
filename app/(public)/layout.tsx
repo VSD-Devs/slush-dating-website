@@ -77,6 +77,7 @@ export default function PublicLayout({
             </Link>
 
             <div className="hidden md:flex items-center justify-center flex-grow gap-6 mx-4">
+              <Link href="/" className="text-sm font-medium text-gray-600 hover:text-gray-900" aria-label="Home">Home</Link>
               <Link href="/team" className="text-sm font-medium text-gray-600 hover:text-gray-900" aria-label="Meet our Team">Meet the Team</Link>
               <Link href="/blog" className="text-sm font-medium text-gray-600 hover:text-gray-900" aria-label="Read our Blog">Blog</Link>
               
@@ -200,6 +201,13 @@ export default function PublicLayout({
                   <div>
                     <div className="text-sm font-semibold text-gray-900 mb-2">Menu</div>
                     <div className="space-y-2">
+                      <Link 
+                        href="/" 
+                        className="block text-sm text-gray-600 hover:text-gray-900"
+                        onClick={closeMenus}
+                      >
+                        Home
+                      </Link>
                       <Link 
                         href="/team" 
                         className="block text-sm text-gray-600 hover:text-gray-900"

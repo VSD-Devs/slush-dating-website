@@ -65,7 +65,7 @@ export function HeroSection() {
               Video
             </h1>
             <p className="mt-4 sm:mt-6 text-base sm:text-lg text-gray-600 max-w-xl mx-auto lg:mx-0" itemProp="description">
-              Experience authentic connections through video dating. Join thousands of singles for meaningful conversations and real relationships.
+            Real Faces, Real Conversations - Speed-Date and Spark Genuine Connections.
             </p>
             <div className="mt-6 sm:mt-8 flex justify-center lg:justify-start" role="group" aria-label="Download App">
               <DownloadCTA size="lg" />

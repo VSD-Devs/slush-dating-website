@@ -5,6 +5,13 @@ import prisma from '@/lib/prisma';
 import { formatDistanceToNow, format } from 'date-fns';
 import { notFound } from 'next/navigation';
 import { Button } from '@/components/ui/button';
+import { marked } from 'marked';
+
+// Configure marked for safe HTML
+marked.setOptions({
+  gfm: true,
+  breaks: true
+});
 
 interface BlogPost {
   id: string;
@@ -243,9 +250,9 @@ export default async function BlogPostPage({ params }: { params: { id: string } 
 
           {/* Content */}
           <div 
-            className="prose prose-lg max-w-none mb-16"
+            className="prose prose-lg max-w-none mb-16 prose-headings:font-display prose-headings:font-semibold prose-h2:text-3xl prose-h3:text-2xl prose-p:text-gray-600 prose-a:text-blue-600 hover:prose-a:text-blue-800"
             itemProp="articleBody"
-            dangerouslySetInnerHTML={{ __html: post.content }}
+            dangerouslySetInnerHTML={{ __html: marked(post.content) }}
           />
 
           {/* Related Posts */}
@@ -289,8 +296,8 @@ export default async function BlogPostPage({ params }: { params: { id: string } 
               </Link>
             </Button>
             <Button asChild>
-              <Link href="/events">
-                Join Dating Events →
+              <Link href="/">
+                Back to Home →
               </Link>
             </Button>
           </div>

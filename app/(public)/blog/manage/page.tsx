@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, Eye, Save, Info, Wand2, CheckCircle, XCircle } from 'lucide-react';
 import Link from 'next/link';
 import ImageUpload from '@/components/image-upload';
+import RichTextEditor from '@/components/rich-text-editor';
 
 interface BlogPost {
   title: string;
@@ -426,168 +427,10 @@ export default function BlogManage() {
                   {post.content.length} characters
                 </span>
               </label>
-              <div className="border border-gray-300 rounded-md overflow-hidden">
-                <div className="bg-gray-50 border-b border-gray-300 p-2 flex flex-wrap gap-2">
-                  {/* Text Style Controls */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const textarea = document.getElementById('content') as HTMLTextAreaElement;
-                      const start = textarea.selectionStart;
-                      const end = textarea.selectionEnd;
-                      const text = textarea.value;
-                      const newText = 
-                        text.substring(0, start) +
-                        `**${text.substring(start, end)}**` +
-                        text.substring(end);
-                      setPost({ ...post, content: newText });
-                    }}
-                    className="px-2 py-1 text-sm text-gray-700 hover:bg-gray-200 rounded flex items-center gap-1"
-                    title="Bold"
-                  >
-                    <span className="font-bold">B</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const textarea = document.getElementById('content') as HTMLTextAreaElement;
-                      const start = textarea.selectionStart;
-                      const end = textarea.selectionEnd;
-                      const text = textarea.value;
-                      const newText = 
-                        text.substring(0, start) +
-                        `*${text.substring(start, end)}*` +
-                        text.substring(end);
-                      setPost({ ...post, content: newText });
-                    }}
-                    className="px-2 py-1 text-sm text-gray-700 hover:bg-gray-200 rounded flex items-center gap-1"
-                    title="Italic"
-                  >
-                    <span className="italic">I</span>
-                  </button>
-                  <div className="w-px h-6 bg-gray-300 mx-1" />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const textarea = document.getElementById('content') as HTMLTextAreaElement;
-                      const start = textarea.selectionStart;
-                      const text = textarea.value;
-                      const newText = 
-                        text.substring(0, start) +
-                        '\n## Heading\n' +
-                        text.substring(start);
-                      setPost({ ...post, content: newText });
-                    }}
-                    className="px-2 py-1 text-sm text-gray-700 hover:bg-gray-200 rounded flex items-center gap-1"
-                    title="Add H2 Heading"
-                  >
-                    H2
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const textarea = document.getElementById('content') as HTMLTextAreaElement;
-                      const start = textarea.selectionStart;
-                      const text = textarea.value;
-                      const newText = 
-                        text.substring(0, start) +
-                        '\n### Subheading\n' +
-                        text.substring(start);
-                      setPost({ ...post, content: newText });
-                    }}
-                    className="px-2 py-1 text-sm text-gray-700 hover:bg-gray-200 rounded flex items-center gap-1"
-                    title="Add H3 Subheading"
-                  >
-                    H3
-                  </button>
-                  <div className="w-px h-6 bg-gray-300 mx-1" />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const textarea = document.getElementById('content') as HTMLTextAreaElement;
-                      const start = textarea.selectionStart;
-                      const text = textarea.value;
-                      const newText = 
-                        text.substring(0, start) +
-                        '\n- List item\n' +
-                        text.substring(start);
-                      setPost({ ...post, content: newText });
-                    }}
-                    className="px-2 py-1 text-sm text-gray-700 hover:bg-gray-200 rounded flex items-center gap-1"
-                    title="Add Bullet List"
-                  >
-                    • List
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const textarea = document.getElementById('content') as HTMLTextAreaElement;
-                      const start = textarea.selectionStart;
-                      const text = textarea.value;
-                      const newText = 
-                        text.substring(0, start) +
-                        '\n1. Numbered item\n' +
-                        text.substring(start);
-                      setPost({ ...post, content: newText });
-                    }}
-                    className="px-2 py-1 text-sm text-gray-700 hover:bg-gray-200 rounded flex items-center gap-1"
-                    title="Add Numbered List"
-                  >
-                    1. List
-                  </button>
-                  <div className="w-px h-6 bg-gray-300 mx-1" />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const textarea = document.getElementById('content') as HTMLTextAreaElement;
-                      const start = textarea.selectionStart;
-                      const end = textarea.selectionEnd;
-                      const text = textarea.value;
-                      const url = prompt('Enter URL:');
-                      if (url) {
-                        const newText = 
-                          text.substring(0, start) +
-                          `[${text.substring(start, end)}](${url})` +
-                          text.substring(end);
-                        setPost({ ...post, content: newText });
-                      }
-                    }}
-                    className="px-2 py-1 text-sm text-gray-700 hover:bg-gray-200 rounded flex items-center gap-1"
-                    title="Add Link"
-                  >
-                    Link
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const textarea = document.getElementById('content') as HTMLTextAreaElement;
-                      const start = textarea.selectionStart;
-                      const text = textarea.value;
-                      const newText = 
-                        text.substring(0, start) +
-                        '\n> Quote or highlight text here\n' +
-                        text.substring(start);
-                      setPost({ ...post, content: newText });
-                    }}
-                    className="px-2 py-1 text-sm text-gray-700 hover:bg-gray-200 rounded flex items-center gap-1"
-                    title="Add Blockquote"
-                  >
-                    "Quote"
-                  </button>
-                </div>
-                <textarea
-                  id="content"
-                  value={post.content}
-                  onChange={(e) => setPost({ ...post, content: e.target.value })}
-                  rows={20}
-                  className="w-full px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Write your blog post content here..."
-                  required
-                />
-              </div>
-              <p className="text-xs text-gray-500">
-                Use Markdown for formatting: **bold**, *italic*, ## headings, - for lists, [text](url) for links
-              </p>
+              <RichTextEditor
+                content={post.content}
+                onChange={(newContent) => setPost({ ...post, content: newContent })}
+              />
             </div>
 
             {/* Error Message */}
