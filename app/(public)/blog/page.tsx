@@ -27,6 +27,16 @@ interface BlogPost {
   author: string;
 }
 
+interface DbPost {
+  id: string;
+  title: string;
+  excerpt: string | null;
+  category: string | null;
+  image: string | null;
+  createdAt: Date;
+  author: string;
+}
+
 async function getBlogPosts(): Promise<BlogPost[]> {
   const posts = await prisma.post.findMany({
     orderBy: {
@@ -42,7 +52,17 @@ async function getBlogPosts(): Promise<BlogPost[]> {
       author: true
     }
   });
-  return posts;
+
+  // Transform the posts data to match BlogPost interface
+  return posts.map((post: DbPost) => ({
+    id: post.id,
+    title: post.title,
+    excerpt: post.excerpt || '',  // Provide default empty string if null
+    category: post.category || 'Uncategorized',  // Provide default category if null
+    image: post.image,
+    createdAt: post.createdAt,
+    author: post.author
+  }));
 }
 
 export default async function BlogPage() {
