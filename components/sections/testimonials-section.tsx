@@ -41,21 +41,21 @@ export function TestimonialsSection() {
   };
 
   return (
-    <section className="py-16 sm:py-20 bg-gradient-to-b from-blue-50/50 to-white relative overflow-hidden">
+    <section className="py-16 sm:py-20 bg-gradient-to-b from-blue-50/50 to-white relative overflow-hidden" aria-labelledby="testimonials-heading">
       {/* Background decorations */}
-      <div className="absolute left-0 top-0 w-72 h-72 bg-blue-100/50 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl" />
-      <div className="absolute right-0 bottom-0 w-96 h-96 bg-purple-100/50 rounded-full translate-x-1/2 translate-y-1/2 blur-3xl" />
+      <div className="absolute left-0 top-0 w-72 h-72 bg-blue-100/50 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl" aria-hidden="true" />
+      <div className="absolute right-0 bottom-0 w-96 h-96 bg-purple-100/50 rounded-full translate-x-1/2 translate-y-1/2 blur-3xl" aria-hidden="true" />
 
       <div className="container mx-auto px-4">
         <div className="text-center max-w-2xl mx-auto mb-12">
-          <span className="text-blue-600 font-semibold text-sm uppercase tracking-wider mb-4 block animate-fade-in">
+          <span className="text-blue-600 font-semibold text-sm uppercase tracking-wider mb-4 block animate-fade-in" role="text">
             Success Stories
           </span>
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-blue-600 inline-block text-transparent bg-clip-text pb-2">
+          <h2 id="testimonials-heading" className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-blue-600 inline-block text-transparent bg-clip-text pb-2" itemProp="headline">
             Real Connections, Real Stories
           </h2>
-          <p className="text-xl text-gray-600">
-            See how Slush is bringing people together
+          <p className="text-xl text-gray-600" itemProp="description">
+            Discover how Slush Dating is transforming online dating through authentic video connections
           </p>
         </div>
 
@@ -64,54 +64,62 @@ export function TestimonialsSection() {
           <button 
             onClick={prevSlide}
             className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 lg:-translate-x-12 z-10 bg-white rounded-full p-2 shadow-lg hover:shadow-xl transition-all duration-200 hidden md:block"
+            aria-label="Previous testimonial"
           >
-            <ChevronLeft className="w-6 h-6 text-gray-600" />
+            <ChevronLeft className="w-6 h-6 text-gray-600" aria-hidden="true" />
           </button>
           <button 
             onClick={nextSlide}
             className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 lg:translate-x-12 z-10 bg-white rounded-full p-2 shadow-lg hover:shadow-xl transition-all duration-200 hidden md:block"
+            aria-label="Next testimonial"
           >
-            <ChevronRight className="w-6 h-6 text-gray-600" />
+            <ChevronRight className="w-6 h-6 text-gray-600" aria-hidden="true" />
           </button>
 
           {/* Testimonial Card */}
-          <div className="bg-white rounded-3xl shadow-xl p-6 sm:p-8 md:p-12">
+          <div className="bg-blue-50/80 backdrop-blur-sm rounded-3xl shadow-xl p-6 sm:p-8 md:p-12" itemScope itemType="https://schema.org/Review">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
               <div className="space-y-6">
-                <h3 className="text-xl sm:text-2xl font-semibold text-gray-900">
+                <h3 className="text-xl sm:text-2xl font-semibold text-blue-900" itemProp="author">
                   {testimonials[activeSlide].names}
                 </h3>
                 <div className="relative">
-                  <span className="absolute -left-4 -top-4 text-4xl text-blue-200">"</span>
-                  <p className="text-lg sm:text-xl font-normal leading-relaxed text-gray-600 italic">
+                  <span className="absolute -left-4 -top-4 text-4xl text-blue-200" aria-hidden="true">"</span>
+                  <p className="text-lg sm:text-xl font-normal leading-relaxed text-blue-800 italic" itemProp="reviewBody">
                     {testimonials[activeSlide].story}
                   </p>
-                  <span className="absolute -bottom-4 right-0 text-4xl text-blue-200">"</span>
+                  <span className="absolute -bottom-4 right-0 text-4xl text-blue-200" aria-hidden="true">"</span>
                 </div>
                 <div className="inline-block">
-                  <span className="text-blue-500 text-sm font-medium">
+                  <span className="text-blue-500 text-sm font-medium" itemProp="about">
                     {testimonials[activeSlide].tag}
                   </span>
+                </div>
+                <meta itemProp="datePublished" content="2024-01-09" />
+                <div itemProp="reviewRating" itemScope itemType="https://schema.org/Rating">
+                  <meta itemProp="ratingValue" content="5" />
+                  <meta itemProp="bestRating" content="5" />
                 </div>
               </div>
               
               <div className="relative aspect-[4/3] md:aspect-square rounded-2xl overflow-hidden">
                 <Image
                   src={testimonials[activeSlide].image}
-                  alt={testimonials[activeSlide].names}
+                  alt={`${testimonials[activeSlide].names} - Slush Dating Success Story`}
                   width={500}
                   height={500}
                   quality={95}
                   priority={activeSlide === 0}
                   sizes="(max-width: 768px) 100vw, 50vw"
                   className="object-cover w-full h-full"
+                  itemProp="image"
                 />
               </div>
             </div>
           </div>
 
           {/* Carousel Indicators */}
-          <div className="flex justify-center gap-2 mt-8">
+          <div className="flex justify-center gap-2 mt-8" role="tablist">
             {testimonials.map((_, index) => (
               <button
                 key={index}
@@ -119,11 +127,12 @@ export function TestimonialsSection() {
                 className={`w-2 h-2 rounded-full transition-all duration-300 ${
                   activeSlide === index ? 'w-8 bg-blue-500' : 'bg-gray-300 hover:bg-gray-400'
                 }`}
+                role="tab"
+                aria-selected={activeSlide === index}
+                aria-label={`Show testimonial ${index + 1}`}
               />
             ))}
           </div>
-
-          
         </div>
       </div>
     </section>

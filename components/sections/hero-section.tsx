@@ -43,12 +43,12 @@ function VideoSection({ src }: { src: string }) {
 
 export function HeroSection() {
   return (
-    <section className="relative overflow-x-hidden">
+    <section className="relative overflow-x-hidden" aria-label="Hero Section">
       <div className="container mx-auto px-4 py-12 sm:py-16 md:py-20 lg:py-24">
         <div className="absolute inset-0 -z-10 translate-x-1/4 hidden md:block">
           <Image
             src="/Hero background.png"
-            alt="Hero background"
+            alt="Decorative background pattern showing connected people"
             fill
             className="object-cover"
             priority
@@ -56,38 +56,38 @@ export function HeroSection() {
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center">
           <div className="text-center lg:text-left">
-            <span className="inline-block text-blue-600 font-semibold text-sm uppercase tracking-wider mb-4 animate-fade-in">
+            <span className="inline-block text-blue-600 font-semibold text-sm uppercase tracking-wider mb-4 animate-fade-in" role="text">
               Online Dating Reimagined
             </span>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight" itemProp="headline">
               Break The Ice
               <span className="text-blue-500"> Through </span>
               Video
             </h1>
-            <p className="mt-4 sm:mt-6 text-base sm:text-lg text-gray-600 max-w-xl mx-auto lg:mx-0">
-              No filters, no endless texting – just real people having meaningful conversations.
+            <p className="mt-4 sm:mt-6 text-base sm:text-lg text-gray-600 max-w-xl mx-auto lg:mx-0" itemProp="description">
+              Experience authentic connections through video dating. Join thousands of singles for meaningful conversations and real relationships.
             </p>
-            <div className="mt-6 sm:mt-8 flex justify-center lg:justify-start">
+            <div className="mt-6 sm:mt-8 flex justify-center lg:justify-start" role="group" aria-label="Download App">
               <DownloadCTA size="lg" />
             </div>
             <div className="mt-8 flex items-center gap-4 justify-center lg:justify-start">
-              <div className="flex -space-x-4">
+              <div className="flex -space-x-4" role="group" aria-label="Active Users">
                 {userAvatars.map((avatar, i) => (
                   <div key={i} className="w-8 sm:w-10 h-8 sm:h-10 rounded-full border-2 border-white relative overflow-hidden">
                     <Image
                       src={avatar}
-                      alt={`Active user ${i + 1}`}
+                      alt={`Active dating app user ${i + 1}`}
                       fill
                       className="object-cover"
                     />
                   </div>
                 ))}
               </div>
-              <p className="text-sm text-gray-600">Join 1000+ active users</p>
+              <p className="text-sm text-gray-600" role="status" aria-live="polite">Join 1000+ active users in your area</p>
             </div>
           </div>
 
-          <div className="relative h-[400px] sm:h-[500px] lg:h-[600px] mt-8 lg:mt-0 hidden md:block">
+          <div className="relative h-[400px] sm:h-[500px] lg:h-[600px] mt-8 lg:mt-0 hidden md:block" role="complementary">
             <div className="absolute inset-0 rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden shadow-2xl">
               <div className="absolute inset-0 bg-gradient-to-br from-blue-50/90 to-purple-50/90 backdrop-blur-sm" />
               
@@ -100,18 +100,18 @@ export function HeroSection() {
               </div>
             </div>
 
-            <div className="absolute -right-4 top-12 bg-white rounded-2xl p-4 shadow-lg transform rotate-6 animate-float-slow hidden md:block">
+            <div className="absolute -right-4 top-12 bg-white rounded-2xl p-4 shadow-lg transform rotate-6 animate-float-slow hidden md:block" aria-hidden="true">
               <VideoIcon className="w-6 h-6 text-blue-500" />
             </div>
-            <div className="absolute -left-6 top-1/4 bg-white rounded-2xl p-4 shadow-lg transform -rotate-6 animate-float hidden md:block">
+            <div className="absolute -left-6 top-1/4 bg-white rounded-2xl p-4 shadow-lg transform -rotate-6 animate-float hidden md:block" aria-hidden="true">
               <Heart className="w-6 h-6 text-pink-500" />
             </div>
-            <div className="absolute -right-2 bottom-20 bg-white rounded-2xl p-4 shadow-lg transform rotate-12 animate-float-slow hidden md:block">
+            <div className="absolute -right-2 bottom-20 bg-white rounded-2xl p-4 shadow-lg transform rotate-12 animate-float-slow hidden md:block" aria-hidden="true">
               <MessageCircle className="w-6 h-6 text-purple-500" />
             </div>
 
-            <div className="absolute -z-10 -top-6 -right-6 w-48 h-48 bg-blue-200/30 rounded-full blur-2xl hidden md:block" />
-            <div className="absolute -z-10 -bottom-8 -left-8 w-72 h-72 bg-purple-200/30 rounded-full blur-3xl hidden md:block" />
+            <div className="absolute -z-10 -top-6 -right-6 w-48 h-48 bg-blue-200/30 rounded-full blur-2xl hidden md:block" aria-hidden="true" />
+            <div className="absolute -z-10 -bottom-8 -left-8 w-72 h-72 bg-purple-200/30 rounded-full blur-3xl hidden md:block" aria-hidden="true" />
           </div>
         </div>
       </div>

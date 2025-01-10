@@ -1,9 +1,10 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import Link from "next/link";
-import { ArrowLeft, Calendar } from "lucide-react";
+import { Metadata } from 'next';
+import Image from 'next/image';
+import Link from 'next/link';
+import prisma from '@/lib/prisma';
+import { formatDistanceToNow, format } from 'date-fns';
+import { notFound } from 'next/navigation';
+import { Button } from '@/components/ui/button';
 
 interface BlogPost {
   id: string;
@@ -11,124 +12,231 @@ interface BlogPost {
   content: string;
   excerpt: string;
   category: string;
-  image: string;
-  createdAt: string;
+  image: string | null;
+  createdAt: Date;
   author: string;
 }
 
-export default function BlogPostPage() {
-  const params = useParams();
-  const [post, setPost] = useState<BlogPost | null>(null);
-  const [loading, setLoading] = useState(true);
+async function getBlogPost(id: string): Promise<BlogPost | null> {
+  const post = await prisma.post.findUnique({
+    where: { id }
+  });
+  return post;
+}
 
-  useEffect(() => {
-    const fetchPost = async () => {
-      try {
-        const response = await fetch(`/api/blog/${params.id}`);
-        if (response.ok) {
-          const data = await response.json();
-          setPost(data);
-        }
-      } catch (error) {
-        console.error("Error fetching post:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (params.id) {
-      fetchPost();
+async function getRelatedPosts(category: string, currentId: string): Promise<BlogPost[]> {
+  const posts = await prisma.post.findMany({
+    where: {
+      category,
+      id: { not: currentId }
+    },
+    take: 3,
+    orderBy: {
+      createdAt: 'desc'
     }
-  }, [params.id]);
+  });
+  return posts;
+}
 
-  if (loading) {
-    return (
-      <div className="container mx-auto px-4 py-16">
-        <div className="max-w-4xl mx-auto animate-pulse">
-          <div className="h-96 bg-gray-200 rounded-xl mb-8" />
-          <div className="h-8 bg-gray-200 rounded w-3/4 mb-4" />
-          <div className="h-4 bg-gray-200 rounded w-1/4 mb-8" />
-          <div className="space-y-4">
-            <div className="h-4 bg-gray-200 rounded w-full" />
-            <div className="h-4 bg-gray-200 rounded w-full" />
-            <div className="h-4 bg-gray-200 rounded w-3/4" />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
+export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+  const post = await getBlogPost(params.id);
+  
   if (!post) {
-    return (
-      <div className="container mx-auto px-4 py-16 text-center">
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">Post not found</h1>
-        <Link
-          href="/blog"
-          className="text-blue-600 hover:text-blue-700 flex items-center justify-center gap-2"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back to blog
-        </Link>
-      </div>
-    );
+    return {
+      title: 'Post Not Found | Slush Dating Blog',
+      description: 'The blog post you are looking for could not be found.'
+    };
   }
+
+  return {
+    title: `${post.title} | Slush Dating Blog`,
+    description: post.excerpt,
+    openGraph: {
+      title: post.title,
+      description: post.excerpt,
+      type: 'article',
+      publishedTime: post.createdAt.toISOString(),
+      authors: [post.author],
+      url: `https://slushdating.com/blog/${post.id}`,
+      images: post.image ? [
+        {
+          url: post.image,
+          width: 1200,
+          height: 630,
+          alt: post.title
+        }
+      ] : undefined
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: post.title,
+      description: post.excerpt,
+      images: post.image ? [post.image] : undefined
+    }
+  };
+}
+
+export default async function BlogPostPage({ params }: { params: { id: string } }) {
+  const post = await getBlogPost(params.id);
+  
+  if (!post) {
+    notFound();
+  }
+
+  const relatedPosts = await getRelatedPosts(post.category, post.id);
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.title,
+    description: post.excerpt,
+    image: post.image || undefined,
+    datePublished: post.createdAt.toISOString(),
+    dateModified: post.createdAt.toISOString(),
+    author: {
+      '@type': 'Person',
+      name: post.author
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Slush Dating',
+      logo: {
+        '@type': 'ImageObject',
+        url: 'https://slushdating.com/logo.png'
+      }
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `https://slushdating.com/blog/${post.id}`
+    }
+  };
 
   return (
-    <article className="min-h-screen">
-      {/* Hero Section */}
-      <div className="relative h-[70vh] min-h-[500px]">
-        <img
-          src={post.image}
-          alt={post.title}
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/75 to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 p-8">
-          <div className="container mx-auto">
-            <div className="max-w-4xl">
-              <Link
-                href="/blog"
-                className="inline-flex items-center text-white/80 hover:text-white mb-4"
-              >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to blog
-              </Link>
-              <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-                {post.title}
-              </h1>
-              <div className="flex items-center gap-6 text-white/80">
-                <div className="flex items-center gap-2">
-                  <span>By {post.author}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Calendar className="w-4 h-4" />
-                  <time dateTime={post.createdAt}>
-                    {new Date(post.createdAt).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                  </time>
-                </div>
-                <span className="text-blue-400">{post.category}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white py-16">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
 
-      {/* Content Section */}
-      <div className="container mx-auto px-4 py-16">
-        <div className="max-w-4xl mx-auto">
-          <div className="prose prose-lg max-w-none">
-            <p className="lead text-xl text-gray-600 mb-8">{post.excerpt}</p>
-            <div
-              dangerouslySetInnerHTML={{ __html: post.content }}
-              className="prose-headings:text-gray-900 prose-p:text-gray-600 prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline"
-            />
+      <div className="container mx-auto px-4">
+        <article className="max-w-4xl mx-auto" itemScope itemType="https://schema.org/BlogPosting">
+          {/* Breadcrumbs */}
+          <nav className="mb-8 text-sm" aria-label="Breadcrumb">
+            <ol className="flex items-center space-x-2">
+              <li>
+                <Link href="/" className="text-gray-500 hover:text-blue-600">
+                  Home
+                </Link>
+              </li>
+              <li className="text-gray-400">/</li>
+              <li>
+                <Link href="/blog" className="text-gray-500 hover:text-blue-600">
+                  Blog
+                </Link>
+              </li>
+              <li className="text-gray-400">/</li>
+              <li>
+                <Link 
+                  href={`/blog/category/${post.category.toLowerCase()}`}
+                  className="text-gray-500 hover:text-blue-600"
+                >
+                  {post.category}
+                </Link>
+              </li>
+            </ol>
+          </nav>
+
+          {/* Header */}
+          <header className="mb-8">
+            <h1 
+              className="text-4xl sm:text-5xl font-bold mb-4 text-gray-900"
+              itemProp="headline"
+            >
+              {post.title}
+            </h1>
+            <div className="flex items-center gap-4 text-gray-600">
+              <span itemProp="author">{post.author}</span>
+              <span>•</span>
+              <time 
+                dateTime={post.createdAt.toISOString()}
+                itemProp="datePublished"
+              >
+                {format(post.createdAt, 'MMMM d, yyyy')}
+              </time>
+              <span>•</span>
+              <span itemProp="articleSection">{post.category}</span>
+            </div>
+          </header>
+
+          {/* Featured Image */}
+          {post.image && (
+            <div className="mb-12 relative aspect-video rounded-2xl overflow-hidden">
+              <Image
+                src={post.image}
+                alt={post.title}
+                fill
+                className="object-cover"
+                priority
+                itemProp="image"
+              />
+            </div>
+          )}
+
+          {/* Content */}
+          <div 
+            className="prose prose-lg max-w-none mb-16"
+            itemProp="articleBody"
+            dangerouslySetInnerHTML={{ __html: post.content }}
+          />
+
+          {/* Related Posts */}
+          {relatedPosts.length > 0 && (
+            <section className="border-t border-gray-200 pt-12">
+              <h2 className="text-2xl font-bold mb-8">Related Articles</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {relatedPosts.map((relatedPost) => (
+                  <Link 
+                    key={relatedPost.id}
+                    href={`/blog/${relatedPost.id}`}
+                    className="group"
+                  >
+                    {relatedPost.image && (
+                      <div className="aspect-video relative rounded-xl overflow-hidden mb-4">
+                        <Image
+                          src={relatedPost.image}
+                          alt={relatedPost.title}
+                          fill
+                          className="object-cover transition-transform duration-300 group-hover:scale-105"
+                        />
+                      </div>
+                    )}
+                    <h3 className="font-semibold mb-2 group-hover:text-blue-600 transition-colors">
+                      {relatedPost.title}
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      {formatDistanceToNow(relatedPost.createdAt, { addSuffix: true })}
+                    </p>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Navigation */}
+          <div className="flex justify-between items-center mt-12 pt-8 border-t border-gray-200">
+            <Button asChild variant="ghost">
+              <Link href="/blog">
+                ← Back to Blog
+              </Link>
+            </Button>
+            <Button asChild>
+              <Link href="/events">
+                Join Dating Events →
+              </Link>
+            </Button>
           </div>
-        </div>
+        </article>
       </div>
-    </article>
+    </div>
   );
 } 

@@ -3,31 +3,37 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-  // Create sample blog post
-  const samplePost = await prisma.post.upsert({
-    where: { id: 'sample-post' },
+  // Create initial blog post about video dating tips
+  const firstPost = await prisma.post.upsert({
+    where: { id: 'video-dating-tips' },
     update: {},
     create: {
-      id: 'sample-post',
-      title: 'Welcome to Slush Blog',
-      content: `# Welcome to Slush Blog
+      id: 'video-dating-tips',
+      title: '10 Tips for a Great Video Date',
+      content: `# How to Have a Great Video Date
 
-We're excited to share our journey with you! This blog will be your go-to source for:
+Video dating is the modern way to make meaningful connections. Here are our top tips for success:
 
-- Dating tips and advice
-- Success stories
-- Product updates
-- Community highlights
+1. Test your setup beforehand
+2. Find good lighting
+3. Choose a quiet space
+4. Dress to impress
+5. Be punctual
+6. Ask engaging questions
+7. Show genuine interest
+8. Be yourself
+9. Follow up after the date
+10. Stay safe and respect boundaries
 
-Stay tuned for more exciting content!`,
-      excerpt: 'Welcome to the official Slush blog where we share dating insights, success stories, and updates.',
-      category: 'Announcements',
-      image: '/images/welcome-post.jpg',
+Remember, authentic connections start with authentic conversations!`,
+      excerpt: 'Make the most of your video dating experience with these essential tips for success.',
+      category: 'Dating Tips',
+      image: '/images/video-dating-tips.jpg',
       author: 'Slush Team'
     },
   });
 
-  console.log({ samplePost });
+  console.log({ firstPost });
 }
 
 main()

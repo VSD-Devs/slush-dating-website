@@ -33,25 +33,25 @@ export function FAQSection() {
       id: "getting-started",
       name: "Getting Started",
       icon: User,
-      description: "New to Slush? Start here"
+      description: "Essential guide for new users"
     },
     {
       id: "events",
       name: "Events & Dating",
       icon: Calendar,
-      description: "Learn about our video dating events"
+      description: "Video dating events guide"
     },
     {
       id: "technical",
-      name: "Technical",
+      name: "Technical Support",
       icon: Video,
-      description: "Setup and technical questions"
+      description: "Technical help and setup"
     },
     {
       id: "safety",
       name: "Safety & Privacy",
       icon: Shield,
-      description: "Your security matters"
+      description: "Your security and privacy"
     }
   ];
 
@@ -115,39 +115,39 @@ export function FAQSection() {
   };
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-blue-500 to-blue-700 py-20 md:py-32" id="faq">
+    <section className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-blue-500 to-blue-700 py-20 md:py-32" id="faq" aria-labelledby="faq-heading">
       {/* Background decorations */}
-      <div className="absolute inset-0 bg-grid-white/[0.05] bg-[length:16px_16px]" />
-      <div className="absolute left-0 top-0 w-96 h-96 bg-white/10 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl" />
-      <div className="absolute right-0 bottom-0 w-96 h-96 bg-blue-400/20 rounded-full translate-x-1/2 translate-y-1/2 blur-3xl" />
+      <div className="absolute inset-0 bg-grid-white/[0.05] bg-[length:16px_16px]" aria-hidden="true" />
+      <div className="absolute left-0 top-0 w-96 h-96 bg-white/10 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl" aria-hidden="true" />
+      <div className="absolute right-0 bottom-0 w-96 h-96 bg-blue-400/20 rounded-full translate-x-1/2 translate-y-1/2 blur-3xl" aria-hidden="true" />
 
       {/* Floating decorative elements */}
-      <div className="absolute left-10 top-20 bg-white/10 backdrop-blur-sm rounded-2xl p-4 shadow-lg transform -rotate-6 animate-float hidden md:block">
+      <div className="absolute left-10 top-20 bg-white/10 backdrop-blur-sm rounded-2xl p-4 shadow-lg transform -rotate-6 animate-float hidden md:block" aria-hidden="true">
         <HelpCircle className="w-6 h-6 text-white" />
       </div>
-      <div className="absolute right-20 top-40 bg-white/10 backdrop-blur-sm rounded-2xl p-4 shadow-lg transform rotate-12 animate-float-slow hidden md:block">
+      <div className="absolute right-20 top-40 bg-white/10 backdrop-blur-sm rounded-2xl p-4 shadow-lg transform rotate-12 animate-float-slow hidden md:block" aria-hidden="true">
         <MessageCircle className="w-6 h-6 text-yellow-300" />
       </div>
-      <div className="absolute left-1/4 bottom-20 bg-white/10 backdrop-blur-sm rounded-2xl p-4 shadow-lg transform -rotate-12 animate-float hidden md:block">
+      <div className="absolute left-1/4 bottom-20 bg-white/10 backdrop-blur-sm rounded-2xl p-4 shadow-lg transform -rotate-12 animate-float hidden md:block" aria-hidden="true">
         <Heart className="w-6 h-6 text-white" />
       </div>
 
       <div className="container mx-auto px-4 relative">
         <div className="text-center max-w-2xl mx-auto mb-12 md:mb-16">
-          <span className="text-blue-100 font-semibold text-sm uppercase tracking-wider mb-4 block animate-fade-in">
+          <span className="text-blue-100 font-semibold text-sm uppercase tracking-wider mb-4 block animate-fade-in" role="text">
             Got Questions?
           </span>
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">
+          <h2 id="faq-heading" className="text-4xl md:text-5xl font-bold mb-6 text-white" itemProp="headline">
             Frequently Asked Questions
           </h2>
-          <p className="text-xl text-blue-50/90">
-            Everything you need to know about Slush video speed dating
+          <p className="text-xl text-blue-50/90" itemProp="description">
+            Find answers to common questions about Slush video speed dating
           </p>
         </div>
 
-        <div className="max-w-4xl mx-auto relative">
+        <div className="max-w-4xl mx-auto relative" itemScope itemType="https://schema.org/FAQPage">
           {/* Category Selection */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8" role="tablist">
             {categories.map((category) => {
               const Icon = category.icon;
               return (
@@ -159,10 +159,13 @@ export function FAQSection() {
                       ? "bg-white/[0.08] backdrop-blur-sm border-white/20 shadow-lg"
                       : "bg-white/[0.04] border-white/10 hover:bg-white/[0.06]"
                   } border`}
+                  role="tab"
+                  aria-selected={activeCategory === category.id}
+                  aria-controls={`${category.id}-panel`}
                 >
                   <Icon className={`w-6 h-6 mb-2 ${
                     activeCategory === category.id ? "text-yellow-300" : "text-blue-100"
-                  }`} />
+                  }`} aria-hidden="true" />
                   <h3 className={`font-semibold mb-1 ${
                     activeCategory === category.id ? "text-white" : "text-blue-50"
                   }`}>
@@ -175,7 +178,11 @@ export function FAQSection() {
           </div>
 
           {/* FAQ Accordion */}
-          <div className="bg-white/[0.04] backdrop-blur-sm rounded-2xl shadow-lg border border-white/20">
+          <div 
+            className="bg-white/[0.04] backdrop-blur-sm rounded-2xl shadow-lg border border-white/20"
+            role="tabpanel"
+            id={`${activeCategory}-panel`}
+          >
             <Accordion type="single" collapsible className="divide-y divide-white/10">
               {faqs[activeCategory].map((faq, i) => (
                 <AccordionItem 
@@ -183,14 +190,22 @@ export function FAQSection() {
                   value={`item-${i}`}
                   className="animate-fade-in group"
                   style={{ animationDelay: `${i * 150}ms` }}
+                  itemScope
+                  itemProp="mainEntity"
+                  itemType="https://schema.org/Question"
                 >
                   <AccordionTrigger className="px-6 py-4 hover:no-underline transition-all duration-200 hover:bg-white/[0.04] data-[state=open]:bg-white/[0.04]">
-                    <span className="text-left font-semibold text-blue-50 group-hover:text-white transition-colors duration-200">
+                    <span className="text-left font-semibold text-blue-50 group-hover:text-white transition-colors duration-200" itemProp="name">
                       {faq.question}
                     </span>
                   </AccordionTrigger>
-                  <AccordionContent className="text-blue-100/90 px-6 py-4 text-base leading-relaxed">
-                    {faq.answer}
+                  <AccordionContent 
+                    className="text-blue-100/90 px-6 py-4 text-base leading-relaxed"
+                    itemScope
+                    itemProp="acceptedAnswer"
+                    itemType="https://schema.org/Answer"
+                  >
+                    <div itemProp="text">{faq.answer}</div>
                   </AccordionContent>
                 </AccordionItem>
               ))}
