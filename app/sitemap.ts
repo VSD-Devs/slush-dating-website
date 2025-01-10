@@ -30,7 +30,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: route === '' ? 1 : 0.8,
   }));
 
+  let dynamicRoutes: MetadataRoute.Sitemap = [];
+
   try {
+    // Test database connection first
+    await prisma.$connect();
+
     // Get all published blog posts
     const posts = await prisma.post.findMany({
       where: {
@@ -51,37 +56,42 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }
     }) as BlogPost[];
 
-    if (!posts || posts.length === 0) {
-      return staticRoutes;
+    if (posts && posts.length > 0) {
+      // Blog post pages
+      const blogRoutes = posts.map((post: BlogPost) => ({
+        url: `${baseUrl}/blog/${post.id}`,
+        lastModified: post.updatedAt || post.createdAt,
+        changeFrequency: 'weekly' as const,
+        priority: 0.6,
+      }));
+
+      // Get unique categories (excluding null values)
+      const validCategories = posts
+        .map(post => post.category)
+        .filter((category): category is string => category !== null);
+      
+      const categories = Array.from(new Set(validCategories));
+
+      // Category pages
+      const categoryRoutes = categories.map((category) => ({
+        url: `${baseUrl}/blog/category/${category.toLowerCase()}`,
+        lastModified: new Date(),
+        changeFrequency: 'daily' as const,
+        priority: 0.7,
+      }));
+
+      dynamicRoutes = [...blogRoutes, ...categoryRoutes];
     }
-
-    // Blog post pages
-    const blogRoutes = posts.map((post: BlogPost) => ({
-      url: `${baseUrl}/blog/${post.id}`,
-      lastModified: post.updatedAt || post.createdAt,
-      changeFrequency: 'weekly' as const,
-      priority: 0.6,
-    }));
-
-    // Get unique categories (excluding null values)
-    const validCategories = posts
-      .map(post => post.category)
-      .filter((category): category is string => category !== null);
-    
-    const categories = Array.from(new Set(validCategories));
-
-    // Category pages
-    const categoryRoutes = categories.map((category) => ({
-      url: `${baseUrl}/blog/category/${category.toLowerCase()}`,
-      lastModified: new Date(),
-      changeFrequency: 'daily' as const,
-      priority: 0.7,
-    }));
-
-    return [...staticRoutes, ...blogRoutes, ...categoryRoutes];
   } catch (error) {
     console.error('Error generating sitemap:', error);
-    // Return only static routes if database query fails
-    return staticRoutes;
+  } finally {
+    try {
+      await prisma.$disconnect();
+    } catch (e) {
+      console.error('Error disconnecting from database:', e);
+    }
   }
+
+  // Always return at least the static routes
+  return [...staticRoutes, ...dynamicRoutes];
 } 
