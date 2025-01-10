@@ -17,13 +17,14 @@ export default function ImageUpload({ value, onChange, aspectRatio = 16 / 9 }: I
   const [loading, setLoading] = useState(false);
   const [isCropping, setIsCropping] = useState(false);
   const [crop, setCrop] = useState<CropType>({
-    unit: '%',
-    width: 100,
-    height: (100 / aspectRatio),
+    unit: 'px',
+    width: 1200,
+    height: 675,
     x: 0,
     y: 0
   });
   const [tempImage, setTempImage] = useState<string>('');
+  const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
@@ -45,15 +46,34 @@ export default function ImageUpload({ value, onChange, aspectRatio = 16 / 9 }: I
     const reader = new FileReader();
     reader.onload = () => {
       if (typeof reader.result === 'string') {
-        setTempImage(reader.result);
-        setIsCropping(true);
+        // Create an image to get dimensions
+        const img = new Image();
+        img.onload = () => {
+          setImageSize({ width: img.width, height: img.height });
+          
+          // Set initial crop based on image dimensions
+          const cropWidth = Math.min(img.width, 1200);
+          const cropHeight = cropWidth / aspectRatio;
+          
+          setCrop({
+            unit: 'px',
+            width: cropWidth,
+            height: cropHeight,
+            x: (img.width - cropWidth) / 2,
+            y: (img.height - cropHeight) / 2
+          });
+          
+          setTempImage(reader.result as string);
+          setIsCropping(true);
+        };
+        img.src = reader.result;
       }
     };
     reader.onerror = () => {
       alert('Error reading file. Please try again.');
     };
     reader.readAsDataURL(file);
-  }, []);
+  }, [aspectRatio]);
 
   const uploadImage = async (croppedBlob: Blob) => {
     try {
@@ -73,6 +93,7 @@ export default function ImageUpload({ value, onChange, aspectRatio = 16 / 9 }: I
       onChange(data.url);
     } catch (error) {
       console.error('Error uploading file:', error);
+      alert('Failed to upload image. Please try again.');
     } finally {
       setLoading(false);
       setIsCropping(false);
@@ -93,68 +114,38 @@ export default function ImageUpload({ value, onChange, aspectRatio = 16 / 9 }: I
           return;
         }
 
-        // Calculate the actual pixel values from percentages
-        const pixelCrop = {
-          x: (cropData.x * image.naturalWidth) / 100,
-          y: (cropData.y * image.naturalHeight) / 100,
-          width: (cropData.width * image.naturalWidth) / 100,
-          height: (cropData.height * image.naturalHeight) / 100,
-        };
-
-        // Set output size - maintain aspect ratio but limit max dimensions
-        let outputWidth = pixelCrop.width;
-        let outputHeight = pixelCrop.height;
-        
-        const maxWidth = 1200;
-        const maxHeight = maxWidth / aspectRatio;
-
-        if (outputWidth > maxWidth) {
-          outputWidth = maxWidth;
-          outputHeight = (pixelCrop.height * maxWidth) / pixelCrop.width;
-        }
-
-        if (outputHeight > maxHeight) {
-          outputHeight = maxHeight;
-          outputWidth = (pixelCrop.width * maxHeight) / pixelCrop.height;
-        }
-
-        // Set canvas dimensions
-        canvas.width = outputWidth;
-        canvas.height = outputHeight;
+        // Set canvas dimensions to desired output size
+        canvas.width = 1200;
+        canvas.height = 675;
 
         // Fill with white background
         ctx.fillStyle = '#FFFFFF';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        try {
-          // Draw the cropped image
-          ctx.drawImage(
-            image,
-            pixelCrop.x,
-            pixelCrop.y,
-            pixelCrop.width,
-            pixelCrop.height,
-            0,
-            0,
-            outputWidth,
-            outputHeight
-          );
+        // Draw the cropped image
+        ctx.drawImage(
+          image,
+          cropData.x,
+          cropData.y,
+          cropData.width,
+          cropData.height,
+          0,
+          0,
+          1200,
+          675
+        );
 
-          canvas.toBlob(
-            (blob) => {
-              if (!blob) {
-                reject(new Error('Failed to create blob'));
-                return;
-              }
-              resolve(blob);
-            },
-            'image/jpeg',
-            0.92  // Increased quality slightly
-          );
-        } catch (error) {
-          console.error('Error during image processing:', error);
-          reject(error);
-        }
+        canvas.toBlob(
+          (blob) => {
+            if (!blob) {
+              reject(new Error('Failed to create blob'));
+              return;
+            }
+            resolve(blob);
+          },
+          'image/jpeg',
+          0.95  // High quality
+        );
       };
 
       image.onerror = () => {
@@ -198,29 +189,72 @@ export default function ImageUpload({ value, onChange, aspectRatio = 16 / 9 }: I
         <div className="relative w-full rounded-lg overflow-hidden bg-gray-50">
           <ReactCrop
             crop={crop}
-            onChange={(c) => setCrop(c)}
+            onChange={(_, percentCrop) => setCrop(percentCrop)}
+            onComplete={(c) => setCrop(c)}
             aspect={aspectRatio}
-            className="max-h-[600px]"
+            minWidth={400}
           >
             <img
               src={tempImage}
               alt="Crop preview"
-              className="max-h-[600px] mx-auto"
+              style={{ maxHeight: '600px', width: 'auto', margin: '0 auto' }}
             />
           </ReactCrop>
         </div>
-        <div className="flex justify-end gap-2">
+        <div className="flex justify-between items-center">
+          <p className="text-sm text-gray-500">
+            Drag to adjust the crop area. The image will be saved at 1200×675px.
+          </p>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => setIsCropping(false)}
+              disabled={loading}
+              className="px-4 py-2 text-gray-600 hover:text-gray-900 disabled:opacity-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={handleCropComplete}
+              disabled={loading}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
+            >
+              {loading ? 'Processing...' : 'Crop & Upload'}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (preview) {
+    return (
+      <div className="relative w-full aspect-[16/9] rounded-lg overflow-hidden bg-gray-50">
+        <img
+          src={preview}
+          alt="Preview"
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute top-2 right-2 flex gap-2">
           <button
-            onClick={() => setIsCropping(false)}
-            className="px-4 py-2 text-gray-600 hover:text-gray-900"
+            type="button"
+            onClick={() => {
+              setTempImage(preview);
+              setIsCropping(true);
+            }}
+            className="p-1.5 bg-white text-gray-700 rounded-full hover:bg-gray-100 transition-colors shadow-sm"
+            title="Recrop image"
           >
-            Cancel
+            <Crop className="w-4 h-4" />
           </button>
           <button
-            onClick={handleCropComplete}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            type="button"
+            onClick={removeImage}
+            className="p-1.5 bg-white text-gray-700 rounded-full hover:bg-gray-100 transition-colors shadow-sm"
+            title="Remove image"
           >
-            Crop & Upload
+            <X className="w-4 h-4" />
           </button>
         </div>
       </div>
@@ -228,51 +262,27 @@ export default function ImageUpload({ value, onChange, aspectRatio = 16 / 9 }: I
   }
 
   return (
-    <div className="w-full">
-      {preview ? (
-        <div className="relative w-full aspect-[16/9] rounded-lg overflow-hidden">
-          <img
-            src={preview}
-            alt="Preview"
-            className="object-cover w-full h-full"
-          />
-          <div className="absolute top-2 right-2 flex gap-2">
-            <button
-              onClick={() => {
-                setTempImage(preview);
-                setIsCropping(true);
-              }}
-              className="p-1 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors"
-            >
-              <Crop className="w-4 h-4" />
-            </button>
-            <button
-              onClick={removeImage}
-              className="p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      ) : (
-        <div
-          {...getRootProps()}
-          className={`w-full aspect-[16/9] border-2 border-dashed rounded-lg flex flex-col items-center justify-center cursor-pointer
-            ${isDragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-blue-500 hover:bg-gray-50'}
-            ${loading ? 'opacity-50 cursor-wait' : ''}`}
-        >
-          <input {...getInputProps()} />
-          <Upload className="w-8 h-8 text-gray-400 mb-2" />
-          <p className="text-sm text-gray-500 text-center px-4">
-            {isDragActive
-              ? "Drop the image here"
-              : "Drag 'n' drop an image here, or click to select"}
-          </p>
-          <p className="text-xs text-gray-400 mt-1">
-            Recommended size: 1200×675px (16:9)
-          </p>
-        </div>
-      )}
+    <div
+      {...getRootProps()}
+      className={`
+        w-full aspect-[16/9] rounded-lg border-2 border-dashed
+        ${isDragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300 bg-gray-50'}
+        hover:border-blue-500 hover:bg-blue-50 transition-colors cursor-pointer
+        flex flex-col items-center justify-center p-6 text-center
+      `}
+    >
+      <input {...getInputProps()} />
+      <Upload className="w-8 h-8 text-gray-400 mb-4" />
+      <p className="text-sm text-gray-600">
+        {isDragActive ? (
+          'Drop the image here...'
+        ) : (
+          'Drag & drop an image here, or click to select'
+        )}
+      </p>
+      <p className="text-xs text-gray-500 mt-2">
+        Recommended size: 1200×675px (16:9)
+      </p>
     </div>
   );
 } 

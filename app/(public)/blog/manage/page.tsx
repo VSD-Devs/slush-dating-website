@@ -266,298 +266,424 @@ export default function BlogManage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
-          <Link href="/blog" className="flex items-center text-gray-600 hover:text-gray-900">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Blog
-          </Link>
-          <div className="flex items-center gap-4">
-            <button
-              type="button"
-              onClick={() => setShowTips(!showTips)}
-              className="flex items-center text-blue-600 hover:text-blue-700"
-            >
-              <Info className="w-4 h-4 mr-2" />
-              SEO Tips
-            </button>
-            <button
-              type="button"
-              onClick={() => setShowTemplates(!showTemplates)}
-              className="flex items-center text-purple-600 hover:text-purple-700"
-            >
-              <Wand2 className="w-4 h-4 mr-2" />
-              Templates
-            </button>
+    <div className="relative min-h-screen bg-gray-50">
+      {/* SEO Score - Fixed Position */}
+      <div className="fixed right-8 top-32 w-64 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+        <div className="p-4 border-b border-gray-200">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="font-semibold text-gray-900">SEO Score</h3>
+            <span className="text-2xl font-bold text-blue-600">{calculateSeoPercentage()}%</span>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-2">
+            <div 
+              className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${calculateSeoPercentage()}%` }}
+            />
           </div>
         </div>
+        <div className="p-4 space-y-3">
+          {Object.entries(seoScore).map(([key, value]) => (
+            <div key={key} className="flex items-center justify-between text-sm">
+              <span className="capitalize text-gray-600">{key}</span>
+              {value ? (
+                <CheckCircle className="w-5 h-5 text-green-500" />
+              ) : (
+                <XCircle className="w-5 h-5 text-red-500" />
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Image Upload Section */}
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Featured Image
-            </label>
-            <ImageUpload
-              value={post.image}
-              onChange={(url) => setPost({ ...post, image: url })}
-              aspectRatio={16/9}
-            />
-            <p className="text-xs text-gray-500">
-              Recommended size: 1200×675px (16:9). Maximum size: 10MB.
-            </p>
-          </div>
-
-          {/* Title Section */}
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Title *
-              <span className="ml-2 text-sm text-gray-500">
-                {60 - post.title.length} characters remaining
-              </span>
-            </label>
-            <input
-              type="text"
-              value={post.title}
-              onChange={(e) => setPost({ ...post, title: e.target.value })}
-              maxLength={60}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Enter a compelling title..."
-              required
-            />
-          </div>
-
-          {/* Subheader Section */}
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Subheader
-              <span className="ml-2 text-sm text-gray-500">
-                {100 - (post.subheader?.length || 0)} characters remaining
-              </span>
-            </label>
-            <input
-              type="text"
-              value={post.subheader}
-              onChange={(e) => setPost({ ...post, subheader: e.target.value })}
-              maxLength={100}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Add a brief subheader to support your title..."
-            />
-          </div>
-
-          {/* Category Section */}
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Category *
-            </label>
-            <select
-              value={post.category}
-              onChange={(e) => setPost({ ...post, category: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-              required
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-center justify-between mb-8">
+            <Link
+              href="/blog"
+              className="flex items-center text-gray-600 hover:text-gray-900"
             >
-              <option value="">Select a category</option>
-              <option value="Dating Tips">Dating Tips</option>
-              <option value="Relationship Advice">Relationship Advice</option>
-              <option value="Success Stories">Success Stories</option>
-              <option value="Dating Safety">Dating Safety</option>
-              <option value="Video Dating">Video Dating</option>
-              <option value="Online Dating">Online Dating</option>
-            </select>
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to blog
+            </Link>
+            <div className="flex items-center gap-4">
+              <button
+                type="button"
+                onClick={() => setShowTips(!showTips)}
+                className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
+              >
+                <Info className="w-4 h-4" />
+                SEO Tips
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowTemplates(!showTemplates)}
+                className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
+              >
+                <Wand2 className="w-4 h-4" />
+                Templates
+              </button>
+            </div>
           </div>
 
-          {/* Excerpt Section */}
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Excerpt *
-              <span className="ml-2 text-sm text-gray-500">
-                {160 - post.excerpt.length} characters remaining
-              </span>
-            </label>
-            <textarea
-              value={post.excerpt}
-              onChange={(e) => setPost({ ...post, excerpt: e.target.value })}
-              maxLength={160}
-              rows={3}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Write a compelling summary for search results and social sharing..."
-              required
-            />
-          </div>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Image Upload Section */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Featured Image
+              </label>
+              <ImageUpload
+                value={post.image}
+                onChange={(url) => setPost({ ...post, image: url })}
+                aspectRatio={16/9}
+              />
+              <p className="text-xs text-gray-500">
+                Recommended size: 1200×675px (16:9). Maximum size: 10MB.
+              </p>
+            </div>
 
-          {/* Content Section */}
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Content *
-              <span className="ml-2 text-sm text-gray-500">
-                {post.content.length} characters
-              </span>
-            </label>
-            <div className="border border-gray-300 rounded-md overflow-hidden">
-              <div className="bg-gray-50 border-b border-gray-300 p-2 flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    const textarea = document.getElementById('content') as HTMLTextAreaElement;
-                    const start = textarea.selectionStart;
-                    const end = textarea.selectionEnd;
-                    const text = textarea.value;
-                    const url = prompt('Enter URL:');
-                    if (url) {
-                      const newText = 
-                        text.substring(0, start) +
-                        `[${text.substring(start, end)}](${url})` +
-                        text.substring(end);
-                      setPost({ ...post, content: newText });
-                    }
-                  }}
-                  className="px-2 py-1 text-sm text-gray-700 hover:bg-gray-200 rounded"
-                >
-                  Add Link
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    const textarea = document.getElementById('content') as HTMLTextAreaElement;
-                    const start = textarea.selectionStart;
-                    const text = textarea.value;
-                    const newText = 
-                      text.substring(0, start) +
-                      '\n## Heading\n' +
-                      text.substring(start);
-                    setPost({ ...post, content: newText });
-                  }}
-                  className="px-2 py-1 text-sm text-gray-700 hover:bg-gray-200 rounded"
-                >
-                  Add Heading
-                </button>
-              </div>
-              <textarea
-                id="content"
-                value={post.content}
-                onChange={(e) => setPost({ ...post, content: e.target.value })}
-                rows={20}
-                className="w-full px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Write your blog post content here..."
+            {/* Title Section */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Title *
+                <span className="ml-2 text-sm text-gray-500">
+                  {60 - post.title.length} characters remaining
+                </span>
+              </label>
+              <input
+                type="text"
+                value={post.title}
+                onChange={(e) => setPost({ ...post, title: e.target.value })}
+                maxLength={60}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Enter a compelling title..."
                 required
               />
             </div>
-          </div>
 
-          {/* SEO Score */}
-          <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-medium">SEO Score</h3>
-              <span className="text-2xl font-bold text-blue-600">{calculateSeoPercentage()}%</span>
-            </div>
+            {/* Subheader Section */}
             <div className="space-y-2">
-              {Object.entries(seoScore).map(([key, value]) => (
-                <div key={key} className="flex items-center text-sm">
-                  {value ? (
-                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-                  ) : (
-                    <XCircle className="w-4 h-4 text-red-500 mr-2" />
-                  )}
-                  <span className="capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</span>
-                </div>
-              ))}
+              <label className="block text-sm font-medium text-gray-700">
+                Subheader
+                <span className="ml-2 text-sm text-gray-500">
+                  {100 - (post.subheader?.length || 0)} characters remaining
+                </span>
+              </label>
+              <input
+                type="text"
+                value={post.subheader}
+                onChange={(e) => setPost({ ...post, subheader: e.target.value })}
+                maxLength={100}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Add a brief subheader to support your title..."
+              />
             </div>
-          </div>
 
-          {/* Error Message */}
-          {error && (
-            <div className="text-red-600 text-sm">{error}</div>
-          )}
+            {/* Category Section */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Category *
+              </label>
+              <select
+                value={post.category}
+                onChange={(e) => setPost({ ...post, category: e.target.value })}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                required
+              >
+                <option value="">Select a category</option>
+                <option value="Dating Tips">Dating Tips</option>
+                <option value="Relationship Advice">Relationship Advice</option>
+                <option value="Success Stories">Success Stories</option>
+                <option value="Dating Safety">Dating Safety</option>
+                <option value="Video Dating">Video Dating</option>
+                <option value="Online Dating">Online Dating</option>
+              </select>
+            </div>
 
-          {/* Bottom Actions */}
-          <div className="sticky bottom-0 bg-white border-t border-gray-200 py-4">
-            <div className="flex items-center justify-between max-w-4xl mx-auto">
-              <div className="flex items-center gap-4">
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-64 px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Enter password to publish"
+            {/* Excerpt Section */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Excerpt *
+                <span className="ml-2 text-sm text-gray-500">
+                  {160 - post.excerpt.length} characters remaining
+                </span>
+              </label>
+              <textarea
+                value={post.excerpt}
+                onChange={(e) => setPost({ ...post, excerpt: e.target.value })}
+                maxLength={160}
+                rows={3}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Write a compelling summary for search results and social sharing..."
+                required
+              />
+            </div>
+
+            {/* Content Section */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Content *
+                <span className="ml-2 text-sm text-gray-500">
+                  {post.content.length} characters
+                </span>
+              </label>
+              <div className="border border-gray-300 rounded-md overflow-hidden">
+                <div className="bg-gray-50 border-b border-gray-300 p-2 flex flex-wrap gap-2">
+                  {/* Text Style Controls */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const textarea = document.getElementById('content') as HTMLTextAreaElement;
+                      const start = textarea.selectionStart;
+                      const end = textarea.selectionEnd;
+                      const text = textarea.value;
+                      const newText = 
+                        text.substring(0, start) +
+                        `**${text.substring(start, end)}**` +
+                        text.substring(end);
+                      setPost({ ...post, content: newText });
+                    }}
+                    className="px-2 py-1 text-sm text-gray-700 hover:bg-gray-200 rounded flex items-center gap-1"
+                    title="Bold"
+                  >
+                    <span className="font-bold">B</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const textarea = document.getElementById('content') as HTMLTextAreaElement;
+                      const start = textarea.selectionStart;
+                      const end = textarea.selectionEnd;
+                      const text = textarea.value;
+                      const newText = 
+                        text.substring(0, start) +
+                        `*${text.substring(start, end)}*` +
+                        text.substring(end);
+                      setPost({ ...post, content: newText });
+                    }}
+                    className="px-2 py-1 text-sm text-gray-700 hover:bg-gray-200 rounded flex items-center gap-1"
+                    title="Italic"
+                  >
+                    <span className="italic">I</span>
+                  </button>
+                  <div className="w-px h-6 bg-gray-300 mx-1" />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const textarea = document.getElementById('content') as HTMLTextAreaElement;
+                      const start = textarea.selectionStart;
+                      const text = textarea.value;
+                      const newText = 
+                        text.substring(0, start) +
+                        '\n## Heading\n' +
+                        text.substring(start);
+                      setPost({ ...post, content: newText });
+                    }}
+                    className="px-2 py-1 text-sm text-gray-700 hover:bg-gray-200 rounded flex items-center gap-1"
+                    title="Add H2 Heading"
+                  >
+                    H2
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const textarea = document.getElementById('content') as HTMLTextAreaElement;
+                      const start = textarea.selectionStart;
+                      const text = textarea.value;
+                      const newText = 
+                        text.substring(0, start) +
+                        '\n### Subheading\n' +
+                        text.substring(start);
+                      setPost({ ...post, content: newText });
+                    }}
+                    className="px-2 py-1 text-sm text-gray-700 hover:bg-gray-200 rounded flex items-center gap-1"
+                    title="Add H3 Subheading"
+                  >
+                    H3
+                  </button>
+                  <div className="w-px h-6 bg-gray-300 mx-1" />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const textarea = document.getElementById('content') as HTMLTextAreaElement;
+                      const start = textarea.selectionStart;
+                      const text = textarea.value;
+                      const newText = 
+                        text.substring(0, start) +
+                        '\n- List item\n' +
+                        text.substring(start);
+                      setPost({ ...post, content: newText });
+                    }}
+                    className="px-2 py-1 text-sm text-gray-700 hover:bg-gray-200 rounded flex items-center gap-1"
+                    title="Add Bullet List"
+                  >
+                    • List
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const textarea = document.getElementById('content') as HTMLTextAreaElement;
+                      const start = textarea.selectionStart;
+                      const text = textarea.value;
+                      const newText = 
+                        text.substring(0, start) +
+                        '\n1. Numbered item\n' +
+                        text.substring(start);
+                      setPost({ ...post, content: newText });
+                    }}
+                    className="px-2 py-1 text-sm text-gray-700 hover:bg-gray-200 rounded flex items-center gap-1"
+                    title="Add Numbered List"
+                  >
+                    1. List
+                  </button>
+                  <div className="w-px h-6 bg-gray-300 mx-1" />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const textarea = document.getElementById('content') as HTMLTextAreaElement;
+                      const start = textarea.selectionStart;
+                      const end = textarea.selectionEnd;
+                      const text = textarea.value;
+                      const url = prompt('Enter URL:');
+                      if (url) {
+                        const newText = 
+                          text.substring(0, start) +
+                          `[${text.substring(start, end)}](${url})` +
+                          text.substring(end);
+                        setPost({ ...post, content: newText });
+                      }
+                    }}
+                    className="px-2 py-1 text-sm text-gray-700 hover:bg-gray-200 rounded flex items-center gap-1"
+                    title="Add Link"
+                  >
+                    Link
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const textarea = document.getElementById('content') as HTMLTextAreaElement;
+                      const start = textarea.selectionStart;
+                      const text = textarea.value;
+                      const newText = 
+                        text.substring(0, start) +
+                        '\n> Quote or highlight text here\n' +
+                        text.substring(start);
+                      setPost({ ...post, content: newText });
+                    }}
+                    className="px-2 py-1 text-sm text-gray-700 hover:bg-gray-200 rounded flex items-center gap-1"
+                    title="Add Blockquote"
+                  >
+                    "Quote"
+                  </button>
+                </div>
+                <textarea
+                  id="content"
+                  value={post.content}
+                  onChange={(e) => setPost({ ...post, content: e.target.value })}
+                  rows={20}
+                  className="w-full px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Write your blog post content here..."
                   required
                 />
+              </div>
+              <p className="text-xs text-gray-500">
+                Use Markdown for formatting: **bold**, *italic*, ## headings, - for lists, [text](url) for links
+              </p>
+            </div>
+
+            {/* Error Message */}
+            {error && (
+              <div className="text-red-600 text-sm">{error}</div>
+            )}
+
+            {/* Bottom Actions */}
+            <div className="sticky bottom-0 bg-white border-t border-gray-200 py-4">
+              <div className="flex items-center justify-between max-w-4xl mx-auto">
+                <div className="flex items-center gap-4">
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-64 px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Enter password to publish"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setIsPreview(true)}
+                    className="px-6 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 flex items-center"
+                  >
+                    <Eye className="w-4 h-4 mr-2" />
+                    Preview
+                  </button>
+                </div>
                 <button
-                  type="button"
-                  onClick={() => setIsPreview(true)}
-                  className="px-6 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 flex items-center"
+                  type="submit"
+                  disabled={isSaving}
+                  className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center disabled:opacity-50"
                 >
-                  <Eye className="w-4 h-4 mr-2" />
-                  Preview
+                  <Save className="w-4 h-4 mr-2" />
+                  {isSaving ? 'Publishing...' : 'Publish Post'}
                 </button>
               </div>
-              <button
-                type="submit"
-                disabled={isSaving}
-                className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center disabled:opacity-50"
-              >
-                <Save className="w-4 h-4 mr-2" />
-                {isSaving ? 'Publishing...' : 'Publish Post'}
-              </button>
             </div>
-          </div>
-        </form>
+          </form>
 
-        {/* Templates Modal */}
-        {showTemplates && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-              <h2 className="text-2xl font-bold mb-4">Blog Templates</h2>
-              <div className="grid gap-4">
-                {Object.entries(TEMPLATES).map(([name, template]) => (
-                  <button
-                    key={name}
-                    onClick={() => applyTemplate(name as keyof typeof TEMPLATES)}
-                    className="text-left p-4 border rounded-lg hover:border-blue-500"
-                  >
-                    <h3 className="font-medium text-lg mb-2">{name}</h3>
-                    <p className="text-gray-600 text-sm">{template.excerpt}</p>
-                  </button>
-                ))}
+          {/* Templates Modal */}
+          {showTemplates && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                <h2 className="text-2xl font-bold mb-4">Blog Templates</h2>
+                <div className="grid gap-4">
+                  {Object.entries(TEMPLATES).map(([name, template]) => (
+                    <button
+                      key={name}
+                      onClick={() => applyTemplate(name as keyof typeof TEMPLATES)}
+                      className="text-left p-4 border rounded-lg hover:border-blue-500"
+                    >
+                      <h3 className="font-medium text-lg mb-2">{name}</h3>
+                      <p className="text-gray-600 text-sm">{template.excerpt}</p>
+                    </button>
+                  ))}
+                </div>
+                <button
+                  onClick={() => setShowTemplates(false)}
+                  className="mt-4 px-4 py-2 text-gray-600 hover:text-gray-900"
+                >
+                  Close
+                </button>
               </div>
-              <button
-                onClick={() => setShowTemplates(false)}
-                className="mt-4 px-4 py-2 text-gray-600 hover:text-gray-900"
-              >
-                Close
-              </button>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* SEO Tips Modal */}
-        {showTips && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-              <h2 className="text-2xl font-bold mb-4">SEO Writing Tips</h2>
-              <div className="space-y-6">
-                <div>
-                  <h3 className="font-medium text-lg mb-2">Title</h3>
-                  <p className="text-gray-600">{SEO_TIPS.title}</p>
+          {/* SEO Tips Modal */}
+          {showTips && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                <h2 className="text-2xl font-bold mb-4">SEO Writing Tips</h2>
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="font-medium text-lg mb-2">Title</h3>
+                    <p className="text-gray-600">{SEO_TIPS.title}</p>
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-lg mb-2">Excerpt</h3>
+                    <p className="text-gray-600">{SEO_TIPS.excerpt}</p>
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-lg mb-2">Content</h3>
+                    <div className="text-gray-600 whitespace-pre-line">{SEO_TIPS.content}</div>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-medium text-lg mb-2">Excerpt</h3>
-                  <p className="text-gray-600">{SEO_TIPS.excerpt}</p>
-                </div>
-                <div>
-                  <h3 className="font-medium text-lg mb-2">Content</h3>
-                  <div className="text-gray-600 whitespace-pre-line">{SEO_TIPS.content}</div>
-                </div>
+                <button
+                  onClick={() => setShowTips(false)}
+                  className="mt-4 px-4 py-2 text-gray-600 hover:text-gray-900"
+                >
+                  Close
+                </button>
               </div>
-              <button
-                onClick={() => setShowTips(false)}
-                className="mt-4 px-4 py-2 text-gray-600 hover:text-gray-900"
-              >
-                Close
-              </button>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

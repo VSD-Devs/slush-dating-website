@@ -11,31 +11,39 @@ const events = [
   {
     id: 1,
     title: "Friday Frenzy - 5 Dates",
-    image: "https://images.unsplash.com/photo-1543807535-eceef0bc6599?q=80&w=800", // Romantic restaurant setting
-    description: "Speed dating in a luxurious setting"
+    image: "https://images.unsplash.com/photo-1543807535-eceef0bc6599?q=80&w=800",
+    description: "Video speed dating for foodies & wine enthusiasts"
   },
   {
     id: 2,
-    title: "Coffee & Connection",
-    image: "https://images.unsplash.com/photo-1511632765486-a01980e01a18?q=80&w=800", // Coffee date
-    description: "Casual coffee meetups"
+    title: "Coffee & Connection - 5 Dates",
+    image: "https://images.unsplash.com/photo-1511632765486-a01980e01a18?q=80&w=800",
+    description: "Morning video dates for early birds & coffee lovers"
   },
   {
     id: 3,
-    title: "Adventure Dating",
-    image: "https://images.unsplash.com/photo-1530027644375-9c83053d392e?q=80&w=800", // Outdoor adventure
-    description: "Outdoor activities and fun"
+    title: "Adventure Dating - 10 Dates",
+    image: "https://images.unsplash.com/photo-1530027644375-9c83053d392e?q=80&w=800",
+    description: "Connect with thrill-seekers & travel enthusiasts"
   },
   {
     id: 4,
-    title: "Sunset Social",
-    image: "https://images.unsplash.com/photo-1523287562758-66c7fc58967f?q=80&w=800", // Rooftop social
-    description: "Rooftop mixer event"
+    title: "Sunset Social - 5 Dates",
+    image: "https://images.unsplash.com/photo-1523287562758-66c7fc58967f?q=80&w=800",
+    description: "Evening video dates for music & arts lovers"
   }
 ];
 
 export function EventsSection() {
-  const [activeSlide, setActiveSlide] = useState(1);
+  const [activeSlide, setActiveSlide] = useState(0);
+
+  const nextSlide = () => {
+    setActiveSlide((prev) => (prev + 1) % events.length);
+  };
+
+  const prevSlide = () => {
+    setActiveSlide((prev) => (prev - 1 + events.length) % events.length);
+  };
 
   return (
     <section className="bg-gradient-to-br from-blue-600 via-blue-500 to-blue-700 py-16 relative overflow-hidden" id="events">
@@ -71,35 +79,68 @@ export function EventsSection() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {events.map((event, index) => (
-            <div
-              key={event.id}
-              className="group cursor-pointer transform transition-all duration-300 hover:-translate-y-1"
-              onClick={() => setActiveSlide(index)}
+        <div className="relative">
+          {/* Navigation Arrows */}
+          <button
+            onClick={prevSlide}
+            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-20 p-2 rounded-full bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-all duration-200 hidden md:flex items-center justify-center group"
+            aria-label="Previous event"
+          >
+            <svg
+              className="w-6 h-6 text-white transform group-hover:scale-110 transition-transform duration-200"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
             >
-              <div className="relative h-[200px] md:h-[280px] rounded-2xl overflow-hidden shadow-lg backdrop-blur-sm">
-                {/* Glass effect border */}
-                <div className="absolute inset-0 rounded-2xl border border-white/20" />
-                
-                {/* Gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/70 z-10" />
-                
-                <Image
-                  src={event.image}
-                  alt={event.title}
-                  fill
-                  className="object-cover transition-transform duration-300 group-hover:scale-110"
-                />
-                
-                {/* Event title */}
-                <div className="absolute bottom-0 left-0 right-0 p-3 md:p-4 z-20">
-                  <h3 className="text-white text-base md:text-lg font-semibold mb-0.5 md:mb-1">{event.title}</h3>
-                  <p className="text-white/80 text-xs md:text-sm">{event.description}</p>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+
+          <button
+            onClick={nextSlide}
+            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-20 p-2 rounded-full bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-all duration-200 hidden md:flex items-center justify-center group"
+            aria-label="Next event"
+          >
+            <svg
+              className="w-6 h-6 text-white transform group-hover:scale-110 transition-transform duration-200"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {events.map((event, index) => (
+              <div
+                key={event.id}
+                className="group cursor-pointer transform transition-all duration-300 hover:-translate-y-1"
+                onClick={() => setActiveSlide(index)}
+              >
+                <div className="relative h-[200px] md:h-[280px] rounded-2xl overflow-hidden shadow-lg backdrop-blur-sm">
+                  {/* Glass effect border */}
+                  <div className="absolute inset-0 rounded-2xl border border-white/20" />
+                  
+                  {/* Gradient overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/70 z-10" />
+                  
+                  <Image
+                    src={event.image}
+                    alt={event.title}
+                    fill
+                    className="object-cover transition-transform duration-300 group-hover:scale-110"
+                  />
+                  
+                  {/* Event title */}
+                  <div className="absolute bottom-0 left-0 right-0 p-3 md:p-4 z-20">
+                    <h3 className="text-white text-base md:text-lg font-semibold mb-0.5 md:mb-1">{event.title}</h3>
+                    <p className="text-white/80 text-xs md:text-sm">{event.description}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
 
         {/* Carousel indicators */}

@@ -174,10 +174,6 @@ export default async function BlogPage() {
                   >
                     {formatDistanceToNow(post.createdAt, { addSuffix: true })}
                   </time>
-                  {/* Admin helper - only visible in development */}
-                  {process.env.NODE_ENV === 'development' && (
-                    <span className="text-xs text-gray-400">ID: {post.id}</span>
-                  )}
                 </div>
                 <h2 className="text-xl font-semibold mb-3 text-gray-900" itemProp="headline">
                   <Link href={`/blog/${post.id}`} className="hover:text-blue-600 transition-colors duration-200">
