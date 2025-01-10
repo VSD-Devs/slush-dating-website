@@ -1,9 +1,10 @@
 import { MetadataRoute } from 'next'
+import { Post, Prisma } from '@prisma/client'
 import prisma from '@/lib/prisma'
 
 interface BlogPost {
   id: string;
-  category: string;
+  category: string | null;
   createdAt: Date;
   updatedAt: Date | null;
 }
@@ -11,8 +12,8 @@ interface BlogPost {
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://slushdating.com'
   
-  // Main pages
-  const routes = [
+  // Main pages with static routes
+  const staticRoutes: MetadataRoute.Sitemap = [
     '',
     '/help',
     '/privacy',
@@ -30,10 +31,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   try {
-    // Get all blog posts
+    // Get all published blog posts
     const posts = await prisma.post.findMany({
       where: {
-        published: true // Only include published posts
+        published: true,
+        AND: [
+          { title: { not: '' } },
+          { content: { not: '' } }
+        ]
       },
       select: {
         id: true,
@@ -46,16 +51,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }
     }) as BlogPost[];
 
+    if (!posts || posts.length === 0) {
+      return staticRoutes;
+    }
+
     // Blog post pages
-    const blogRoutes = posts.map((post) => ({
+    const blogRoutes = posts.map((post: BlogPost) => ({
       url: `${baseUrl}/blog/${post.id}`,
       lastModified: post.updatedAt || post.createdAt,
       changeFrequency: 'weekly' as const,
       priority: 0.6,
     }));
 
-    // Get unique categories and ensure they're not null
-    const categories = Array.from(new Set(posts.map(post => post.category).filter(Boolean)));
+    // Get unique categories (excluding null values)
+    const validCategories = posts
+      .map(post => post.category)
+      .filter((category): category is string => category !== null);
+    
+    const categories = Array.from(new Set(validCategories));
 
     // Category pages
     const categoryRoutes = categories.map((category) => ({
@@ -65,10 +78,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     }));
 
-    return [...routes, ...blogRoutes, ...categoryRoutes];
+    return [...staticRoutes, ...blogRoutes, ...categoryRoutes];
   } catch (error) {
-    // If database query fails, return only static routes
-    console.error('Error fetching blog posts for sitemap:', error);
-    return routes;
+    console.error('Error generating sitemap:', error);
+    // Return only static routes if database query fails
+    return staticRoutes;
   }
 } 
