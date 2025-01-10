@@ -38,31 +38,43 @@ interface DbPost {
 }
 
 async function getBlogPosts(): Promise<BlogPost[]> {
-  const posts = await prisma.post.findMany({
-    orderBy: {
-      createdAt: 'desc'
-    },
-    select: {
-      id: true,
-      title: true,
-      excerpt: true,
-      category: true,
-      image: true,
-      createdAt: true,
-      author: true
-    }
-  });
+  try {
+    const posts = await prisma.post.findMany({
+      where: {
+        published: true,
+        AND: [
+          { title: { not: '' } },
+          { content: { not: '' } }
+        ]
+      },
+      select: {
+        id: true,
+        title: true,
+        excerpt: true,
+        category: true,
+        image: true,
+        createdAt: true,
+        author: true
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    });
 
-  // Transform the posts data to match BlogPost interface
-  return posts.map((post: DbPost) => ({
-    id: post.id,
-    title: post.title,
-    excerpt: post.excerpt || '',  // Provide default empty string if null
-    category: post.category || 'Uncategorized',  // Provide default category if null
-    image: post.image,
-    createdAt: post.createdAt,
-    author: post.author
-  }));
+    // Transform the posts data to match BlogPost interface
+    return posts.map((post: DbPost) => ({
+      id: post.id,
+      title: post.title,
+      excerpt: post.excerpt || '',  // Provide default empty string if null
+      category: post.category || 'Uncategorized',  // Provide default category if null
+      image: post.image,
+      createdAt: post.createdAt,
+      author: post.author
+    }));
+  } catch (error) {
+    console.error('Error fetching blog posts:', error);
+    return [];
+  }
 }
 
 export default async function BlogPage() {

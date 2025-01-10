@@ -31,48 +31,70 @@ interface DbPost {
 }
 
 async function getBlogPost(id: string): Promise<BlogPost | null> {
-  const post = await prisma.post.findUnique({
-    where: { id }
-  });
-  
-  if (!post) return null;
+  try {
+    const post = await prisma.post.findUnique({
+      where: { 
+        id,
+        published: true,
+        AND: [
+          { title: { not: '' } },
+          { content: { not: '' } }
+        ]
+      }
+    });
+    
+    if (!post) return null;
 
-  // Transform the post data to match BlogPost interface
-  return {
-    id: post.id,
-    title: post.title,
-    content: post.content,
-    excerpt: post.excerpt || '',  // Provide default empty string if null
-    category: post.category || 'Uncategorized',  // Provide default category if null
-    image: post.image,
-    createdAt: post.createdAt,
-    author: post.author
-  };
+    // Transform the post data to match BlogPost interface
+    return {
+      id: post.id,
+      title: post.title,
+      content: post.content,
+      excerpt: post.excerpt || '',  // Provide default empty string if null
+      category: post.category || 'Uncategorized',  // Provide default category if null
+      image: post.image,
+      createdAt: post.createdAt,
+      author: post.author
+    };
+  } catch (error) {
+    console.error('Error fetching blog post:', error);
+    return null;
+  }
 }
 
 async function getRelatedPosts(category: string, currentId: string): Promise<BlogPost[]> {
-  const posts = await prisma.post.findMany({
-    where: {
-      category,
-      id: { not: currentId }
-    },
-    take: 3,
-    orderBy: {
-      createdAt: 'desc'
-    }
-  });
+  try {
+    const posts = await prisma.post.findMany({
+      where: {
+        category,
+        id: { not: currentId },
+        published: true,
+        AND: [
+          { title: { not: '' } },
+          { content: { not: '' } }
+        ]
+      },
+      take: 3,
+      orderBy: {
+        createdAt: 'desc'
+      }
+    });
 
-  // Transform the posts data to match BlogPost interface
-  return posts.map((post: DbPost) => ({
-    id: post.id,
-    title: post.title,
-    content: post.content,
-    excerpt: post.excerpt || '',  // Provide default empty string if null
-    category: post.category || 'Uncategorized',  // Provide default category if null
-    image: post.image,
-    createdAt: post.createdAt,
-    author: post.author
-  }));
+    // Transform the posts data to match BlogPost interface
+    return posts.map((post: DbPost) => ({
+      id: post.id,
+      title: post.title,
+      content: post.content,
+      excerpt: post.excerpt || '',
+      category: post.category || 'Uncategorized',
+      image: post.image,
+      createdAt: post.createdAt,
+      author: post.author
+    }));
+  } catch (error) {
+    console.error('Error fetching related posts:', error);
+    return [];
+  }
 }
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
