@@ -70,9 +70,7 @@ export default function SignInPage() {
               Welcome Back
             </span>
             <h1 className="text-3xl sm:text-4xl font-bold leading-tight mb-2 bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent">
-              Break The Ice
-              <span className="bg-gradient-to-r from-blue-500 to-blue-400 bg-clip-text text-transparent -ml-1.5"> Again</span>
-            </h1>
+              Break The Ice</h1>
             <p className="text-base text-gray-600">
               Real Faces, Real Conversations - Continue Your Journey
             </p>

@@ -8,7 +8,7 @@ const helpCategories = [
     articles: [
       { title: "How to create an account", link: "#" },
       { title: "Navigating the platform", link: "#" },
-      { title: "Your first event", link: "#" }
+      { title: "Your first event", link: "/help/your-first-event" }
     ]
   },
   {

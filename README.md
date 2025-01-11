@@ -21,6 +21,25 @@ Modern video speed dating platform that connects like-minded singles through mea
 - Shadcn UI Components
 - Lucide Icons
 
+## Project Structure
+
+```
+├── app/                    # Next.js 14 app directory
+│   ├── (auth)/            # Authentication related pages
+│   ├── (protected)/       # Protected routes (requires auth)
+│   ├── (public)/          # Public pages
+│   ├── api/               # API routes
+│   └── layout.tsx         # Root layout
+├── components/            # Reusable UI components
+│   ├── sections/          # Page sections
+│   └── ui/               # UI components
+├── lib/                   # Utility functions and configurations
+├── public/               # Static assets
+├── types/                # TypeScript type definitions
+├── hooks/                # Custom React hooks
+└── prisma/               # Database schema and migrations
+```
+
 ## Getting Started
 
 1. Clone the repository

@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
+import { CookieConsent } from '@/components/cookie-consent';
+import GoogleAnalytics from '@/components/google-analytics';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -19,7 +21,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <Providers>
+          <GoogleAnalytics />
           {children}
+          <CookieConsent />
         </Providers>
       </body>
     </html>
