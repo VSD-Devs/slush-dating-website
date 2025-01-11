@@ -1,10 +1,11 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import { useEffect } from 'react';
-import { Calendar, Video, MessageCircle, User, LogOut } from 'lucide-react';
+import { Calendar, Video, MessageCircle, User, LogOut, Settings, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function ProtectedLayout({
@@ -27,6 +28,7 @@ export default function ProtectedLayout({
     { name: 'Video Feed', href: '/video', icon: Video },
     { name: 'Chat', href: '/chat', icon: MessageCircle },
     { name: 'Profile', href: '/profile', icon: User },
+    { name: 'Settings', href: '/settings', icon: Settings },
   ];
 
   const handleSignOut = () => {
@@ -46,9 +48,15 @@ export default function ProtectedLayout({
             <div className="flex items-center">
               <Link 
                 href="/" 
-                className="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent mr-8"
+                className="flex items-center mr-8"
               >
-                Slush
+                <Image
+                  src="/slush-logo.png"
+                  alt="Slush"
+                  width={100}
+                  height={40}
+                  className="object-contain"
+                />
               </Link>
               <div className="flex gap-1">
                 {navigation.map((item) => {

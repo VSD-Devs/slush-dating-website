@@ -22,12 +22,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/cookies',
     '/blog',
     '/contact',
-    '/download'
+    '/download',
+    '/about',
+    '/features',
+    '/success-stories',
+    '/safety',
+    '/faq'
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
-    changeFrequency: 'daily' as const,
-    priority: route === '' ? 1 : 0.8,
+    changeFrequency: route === '/blog' || route === '/success-stories' 
+      ? 'daily' as const 
+      : route === '' 
+        ? 'always' as const 
+        : 'weekly' as const,
+    priority: route === '' 
+      ? 1 
+      : route === '/features' || route === '/success-stories'
+        ? 0.9
+        : 0.8,
   }));
 
   let dynamicRoutes: MetadataRoute.Sitemap = [];

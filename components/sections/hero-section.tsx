@@ -61,7 +61,7 @@ export function HeroSection() {
             </span>
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight" itemProp="headline">
               Break The Ice
-              <span className="text-blue-500"> Through </span>
+              <span className="text-blue-500 -ml-1.5"> Through </span>
               Video
             </h1>
             <p className="mt-4 sm:mt-6 text-base sm:text-lg text-gray-600 max-w-xl mx-auto lg:mx-0" itemProp="description">
