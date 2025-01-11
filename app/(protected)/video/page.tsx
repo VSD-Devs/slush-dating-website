@@ -467,7 +467,7 @@ export default function VideoFeedPage() {
                         </p>
                         {videos[currentVideoIndex].tags && (
                           <div className="flex flex-wrap gap-2">
-                            {videos[currentVideoIndex].tags.map((tag, index) => (
+                            {videos[currentVideoIndex].tags!.map((tag, index) => (
                               <span 
                                 key={index}
                                 className="text-sm text-blue-400 hover:text-blue-300 cursor-pointer transition-colors"
