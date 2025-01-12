@@ -39,6 +39,17 @@ interface DbPost {
 
 async function getBlogPosts(): Promise<BlogPost[]> {
   try {
+    console.log('Attempting to fetch blog posts...');
+    
+    // Test database connection
+    try {
+      await prisma.$queryRaw`SELECT 1`;
+      console.log('Database connection successful');
+    } catch (connError) {
+      console.error('Database connection failed:', connError);
+      throw connError;
+    }
+
     const posts = await prisma.post.findMany({
       where: {
         published: true
@@ -57,6 +68,8 @@ async function getBlogPosts(): Promise<BlogPost[]> {
       }
     });
 
+    console.log(`Successfully fetched ${posts.length} posts`);
+
     return posts.map((post: DbPost) => ({
       id: post.id,
       title: post.title,
@@ -70,9 +83,12 @@ async function getBlogPosts(): Promise<BlogPost[]> {
     console.error('Error fetching blog posts:', {
       message: error.message,
       name: error.name,
-      code: error.code
+      code: error.code,
+      stack: error.stack
     });
-    return [];
+    
+    // Re-throw the error to be handled by Next.js error boundary
+    throw error;
   }
 }
 
