@@ -39,16 +39,9 @@ interface DbPost {
 
 async function getBlogPosts(): Promise<BlogPost[]> {
   try {
-    console.log('Attempting to fetch blog posts...');
-    console.log('Database connection status:', await prisma.$queryRaw`SELECT 1`);
-    
     const posts = await prisma.post.findMany({
       where: {
-        published: true,
-        AND: [
-          { title: { not: '' } },
-          { content: { not: '' } }
-        ]
+        published: true
       },
       select: {
         id: true,
@@ -64,25 +57,20 @@ async function getBlogPosts(): Promise<BlogPost[]> {
       }
     });
 
-    console.log('Raw posts from database:', posts);
-
-    // Transform the posts data to match BlogPost interface
     return posts.map((post: DbPost) => ({
       id: post.id,
       title: post.title,
-      excerpt: post.excerpt || '',  // Provide default empty string if null
-      category: post.category || 'Uncategorized',  // Provide default category if null
+      excerpt: post.excerpt || '',
+      category: post.category || 'Uncategorized',
       image: post.image,
       createdAt: post.createdAt,
       author: post.author
     }));
   } catch (error: any) {
-    console.error('Error fetching blog posts:', error);
-    console.error('Error details:', {
-      name: error?.name,
-      message: error?.message,
-      stack: error?.stack,
-      code: error?.code
+    console.error('Error fetching blog posts:', {
+      message: error.message,
+      name: error.name,
+      code: error.code
     });
     return [];
   }
