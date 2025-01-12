@@ -39,29 +39,11 @@ interface DbPost {
 
 async function getBlogPosts(): Promise<BlogPost[]> {
   try {
-    // Test database connection first
-    await prisma.$connect();
-    
     const posts = await prisma.post.findMany({
-      where: {
-        published: true
-      },
-      select: {
-        id: true,
-        title: true,
-        excerpt: true,
-        category: true,
-        image: true,
-        createdAt: true,
-        author: true
-      },
       orderBy: {
         createdAt: 'desc'
       }
     });
-
-    // Disconnect after query
-    await prisma.$disconnect();
 
     return posts.map((post) => ({
       id: post.id,
@@ -73,19 +55,7 @@ async function getBlogPosts(): Promise<BlogPost[]> {
       author: post.author
     }));
   } catch (error: any) {
-    console.error('Database error:', {
-      message: error.message,
-      code: error.code,
-      meta: error.meta
-    });
-    
-    // Ensure disconnection even on error
-    try {
-      await prisma.$disconnect();
-    } catch (e) {
-      console.error('Error disconnecting:', e);
-    }
-    
+    console.error('Database error:', error);
     return [];
   }
 }
