@@ -39,6 +39,7 @@ interface DbPost {
 
 async function getBlogPosts(): Promise<BlogPost[]> {
   try {
+    console.log('Attempting to fetch blog posts...');
     const posts = await prisma.post.findMany({
       where: {
         published: true,
@@ -61,6 +62,8 @@ async function getBlogPosts(): Promise<BlogPost[]> {
       }
     });
 
+    console.log('Fetched posts:', posts);
+
     // Transform the posts data to match BlogPost interface
     return posts.map((post: DbPost) => ({
       id: post.id,
@@ -71,8 +74,13 @@ async function getBlogPosts(): Promise<BlogPost[]> {
       createdAt: post.createdAt,
       author: post.author
     }));
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error fetching blog posts:', error);
+    console.error('Error details:', {
+      name: error?.name,
+      message: error?.message,
+      stack: error?.stack
+    });
     return [];
   }
 }
