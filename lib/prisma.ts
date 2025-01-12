@@ -17,10 +17,17 @@ const prismaClientSingleton = () => {
     log: ['query', 'error', 'warn']
   });
 
-  // Test the connection
+  // Test the connection with detailed error logging
   client.$connect()
     .then(() => console.log('Successfully connected to database'))
-    .catch(e => console.error('Failed to connect to database:', e));
+    .catch(e => {
+      console.error('Failed to connect to database:', e);
+      console.error('Connection details:', {
+        error: e.message,
+        code: e.code,
+        meta: e.meta
+      });
+    });
 
   return client;
 }

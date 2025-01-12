@@ -40,6 +40,8 @@ interface DbPost {
 async function getBlogPosts(): Promise<BlogPost[]> {
   try {
     console.log('Attempting to fetch blog posts...');
+    console.log('Database connection status:', await prisma.$queryRaw`SELECT 1`);
+    
     const posts = await prisma.post.findMany({
       where: {
         published: true,
@@ -62,7 +64,7 @@ async function getBlogPosts(): Promise<BlogPost[]> {
       }
     });
 
-    console.log('Fetched posts:', posts);
+    console.log('Raw posts from database:', posts);
 
     // Transform the posts data to match BlogPost interface
     return posts.map((post: DbPost) => ({
@@ -79,7 +81,8 @@ async function getBlogPosts(): Promise<BlogPost[]> {
     console.error('Error details:', {
       name: error?.name,
       message: error?.message,
-      stack: error?.stack
+      stack: error?.stack,
+      code: error?.code
     });
     return [];
   }
