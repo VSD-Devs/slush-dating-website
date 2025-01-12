@@ -38,11 +38,28 @@ interface DbPost {
 }
 
 async function getBlogPosts(): Promise<BlogPost[]> {
+  console.log('Environment:', {
+    nodeEnv: process.env.NODE_ENV,
+    hasDbUrl: !!process.env.DATABASE_URL,
+    dbUrlStart: process.env.DATABASE_URL?.substring(0, 30) + '...'
+  });
+
   try {
+    console.log('Attempting to fetch posts...');
     const posts = await prisma.post.findMany({
       orderBy: {
         createdAt: 'desc'
       }
+    });
+
+    console.log('Posts retrieved:', {
+      count: posts.length,
+      firstPost: posts[0] ? {
+        id: posts[0].id,
+        title: posts[0].title,
+        hasExcerpt: !!posts[0].excerpt,
+        hasCategory: !!posts[0].category
+      } : null
     });
 
     return posts.map((post) => ({
@@ -55,7 +72,12 @@ async function getBlogPosts(): Promise<BlogPost[]> {
       author: post.author
     }));
   } catch (error: any) {
-    console.error('Database error:', error);
+    console.error('Database error:', {
+      name: error?.name,
+      message: error?.message,
+      code: error?.code,
+      stack: error?.stack?.split('\n').slice(0, 3)
+    });
     return [];
   }
 }
