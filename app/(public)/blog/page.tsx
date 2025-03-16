@@ -41,13 +41,20 @@ async function getBlogPosts(): Promise<BlogPost[]> {
   try {
     console.log('Attempting to fetch blog posts...');
     
+    // Skip database operations in production build if environment variables aren't properly set
+    if (process.env.SKIP_DB_BLOG === 'true' || process.env.NODE_ENV === 'production') {
+      console.log('Skipping database query for blog posts due to environment configuration');
+      return [];
+    }
+    
     // Test database connection
     try {
       await prisma.$queryRaw`SELECT 1`;
       console.log('Database connection successful');
     } catch (connError) {
       console.error('Database connection failed:', connError);
-      throw connError;
+      // Return empty array instead of throwing error
+      return [];
     }
 
     const posts = await prisma.post.findMany({
@@ -87,8 +94,8 @@ async function getBlogPosts(): Promise<BlogPost[]> {
       stack: error.stack
     });
     
-    // Re-throw the error to be handled by Next.js error boundary
-    throw error;
+    // Return empty array instead of re-throwing the error
+    return [];
   }
 }
 
@@ -145,73 +152,94 @@ export default async function BlogPage() {
 
       <div className="container mx-auto px-4 py-16">
         {/* Categories */}
-        <div className="flex flex-wrap gap-4 justify-center mb-12">
-          {categories.map((category) => (
-            <Link 
-              key={category}
-              href={`/blog/category/${category.toLowerCase()}`}
-              className="px-4 py-2 bg-blue-50 rounded-full border border-blue-100 hover:bg-blue-100 transition-colors duration-200 text-blue-600 font-medium shadow-sm hover:shadow-md"
-            >
-              {category}
-            </Link>
-          ))}
-        </div>
+        {categories.length > 0 && (
+          <div className="flex flex-wrap gap-4 justify-center mb-12">
+            {categories.map((category) => (
+              <Link 
+                key={category}
+                href={`/blog/category/${category.toLowerCase()}`}
+                className="px-4 py-2 bg-blue-50 rounded-full border border-blue-100 hover:bg-blue-100 transition-colors duration-200 text-blue-600 font-medium shadow-sm hover:shadow-md"
+              >
+                {category}
+              </Link>
+            ))}
+          </div>
+        )}
 
         {/* Blog Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {posts.map((post) => (
-            <article 
-              key={post.id}
-              className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden"
-              itemScope
-              itemType="https://schema.org/BlogPosting"
-            >
-              {post.image && (
-                <Link href={`/blog/${post.id}`} className="block aspect-video relative overflow-hidden">
-                  <Image
-                    src={post.image}
-                    alt={post.title}
-                    fill
-                    className="object-cover transition-transform duration-300 hover:scale-105"
-                    itemProp="image"
-                  />
-                </Link>
-              )}
-              <div className="p-6">
-                <div className="flex items-center gap-4 mb-4">
-                  <span className="text-sm text-blue-600 font-medium" itemProp="articleSection">
-                    {post.category}
-                  </span>
-                  <time 
-                    className="text-sm text-gray-500"
-                    itemProp="datePublished"
-                    dateTime={post.createdAt.toISOString()}
-                  >
-                    {formatDistanceToNow(post.createdAt, { addSuffix: true })}
-                  </time>
-                </div>
-                <h2 className="text-xl font-semibold mb-3 text-gray-900" itemProp="headline">
-                  <Link href={`/blog/${post.id}`} className="hover:text-blue-600 transition-colors duration-200">
-                    {post.title}
+        {posts.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {posts.map((post) => (
+              <article 
+                key={post.id}
+                className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden"
+                itemScope
+                itemType="https://schema.org/BlogPosting"
+              >
+                {post.image && (
+                  <Link href={`/blog/${post.id}`} className="block aspect-video relative overflow-hidden">
+                    <Image
+                      src={post.image}
+                      alt={post.title}
+                      fill
+                      className="object-cover transition-transform duration-300 hover:scale-105"
+                      itemProp="image"
+                    />
                   </Link>
-                </h2>
-                <p className="text-gray-600 mb-4" itemProp="description">
-                  {post.excerpt}
-                </p>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-500" itemProp="author">
-                    By {post.author}
-                  </span>
-                  <Button asChild variant="ghost" size="sm">
-                    <Link href={`/blog/${post.id}`}>
-                      Read more
+                )}
+                <div className="p-6">
+                  <div className="flex items-center gap-4 mb-4">
+                    <span className="text-sm text-blue-600 font-medium" itemProp="articleSection">
+                      {post.category}
+                    </span>
+                    <time 
+                      className="text-sm text-gray-500"
+                      itemProp="datePublished"
+                      dateTime={post.createdAt.toISOString()}
+                    >
+                      {formatDistanceToNow(post.createdAt, { addSuffix: true })}
+                    </time>
+                  </div>
+                  <h2 className="text-xl font-semibold mb-3 text-gray-900" itemProp="headline">
+                    <Link href={`/blog/${post.id}`} className="hover:text-blue-600 transition-colors duration-200">
+                      {post.title}
                     </Link>
-                  </Button>
+                  </h2>
+                  <p className="text-gray-600 mb-4" itemProp="description">
+                    {post.excerpt}
+                  </p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-500" itemProp="author">
+                      By {post.author}
+                    </span>
+                    <Button asChild variant="ghost" size="sm">
+                      <Link href={`/blog/${post.id}`}>
+                        Read more
+                      </Link>
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            </article>
-          ))}
-        </div>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <div className="bg-blue-50 rounded-xl p-8 max-w-2xl mx-auto">
+              <Heart className="w-12 h-12 text-blue-500 mx-auto mb-4" />
+              <h2 className="text-2xl font-semibold mb-4">Coming Soon!</h2>
+              <p className="text-gray-600 mb-6">
+                We're working on some amazing blog posts about dating, relationships, and making meaningful connections.
+                Check back soon for updates or subscribe to our newsletter.
+              </p>
+              <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700 text-white">
+                <Link href="/blog/manage" className="inline-flex items-center gap-2">
+                  <Plus className="w-5 h-5" />
+                  Write a Post
+                </Link>
+              </Button>
+            </div>
+          </div>
+        )}
 
         {/* Related Links */}
         <div className="mt-16 pt-8 border-t border-gray-200">

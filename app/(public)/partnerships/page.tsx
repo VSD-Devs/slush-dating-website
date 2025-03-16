@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import React from "react";
 
 // Simple button component to avoid dependency issues
 const Button = ({ 
@@ -9,6 +10,11 @@ const Button = ({
   className = "", 
   size = "default",
   ...props 
+}: {
+  children: React.ReactNode;
+  className?: string;
+  size?: "default" | "sm" | "lg";
+  [key: string]: any;
 }) => {
   const sizeClasses = {
     default: "px-4 py-2",
@@ -27,13 +33,13 @@ const Button = ({
 };
 
 // Simple SVG icons
-const HandshakeIcon = ({ className = "w-6 h-6" }) => (
+const HandshakeIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
     <path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0l-.77.78-.77-.78a5.4 5.4 0 0 0-7.65 0C1.46 6.7 1.33 10.28 4 13l8 8 8-8c2.67-2.72 2.54-6.3.42-8.42z"></path>
   </svg>
 );
 
-const CalendarIcon = ({ className = "w-6 h-6" }) => (
+const CalendarIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
     <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
     <line x1="16" y1="2" x2="16" y2="6"></line>
@@ -42,20 +48,20 @@ const CalendarIcon = ({ className = "w-6 h-6" }) => (
   </svg>
 );
 
-const MessageSquareIcon = ({ className = "w-6 h-6" }) => (
+const MessageSquareIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
   </svg>
 );
 
-const AwardIcon = ({ className = "w-6 h-6" }) => (
+const AwardIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
     <circle cx="12" cy="8" r="7"></circle>
     <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
   </svg>
 );
 
-const ArrowRightIcon = ({ className = "w-6 h-6" }) => (
+const ArrowRightIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
     <line x1="5" y1="12" x2="19" y2="12"></line>
     <polyline points="12 5 19 12 12 19"></polyline>

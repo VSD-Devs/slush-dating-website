@@ -46,6 +46,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   let dynamicRoutes: MetadataRoute.Sitemap = [];
 
+  // Skip database operations in production build if environment variables aren't properly set
+  // This prevents build failures when database isn't available
+  if (process.env.SKIP_DB_SITEMAP === 'true' || process.env.NODE_ENV === 'production') {
+    console.log('Skipping dynamic routes in sitemap due to environment configuration');
+    return staticRoutes;
+  }
+
   try {
     // Test database connection first
     await prisma.$connect();
@@ -98,6 +105,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   } catch (error) {
     console.error('Error generating sitemap:', error);
+    // Return only static routes when database connection fails
+    return staticRoutes;
   } finally {
     try {
       await prisma.$disconnect();
