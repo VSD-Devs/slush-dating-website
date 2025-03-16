@@ -80,6 +80,7 @@ export default function PublicLayout({
               <Link href="/" className="text-sm font-medium text-gray-600 hover:text-gray-900" aria-label="Home">Home</Link>
               <Link href="/team" className="text-sm font-medium text-gray-600 hover:text-gray-900" aria-label="Meet our Team">Meet the Team</Link>
               <Link href="/blog" className="text-sm font-medium text-gray-600 hover:text-gray-900" aria-label="Read our Blog">Blog</Link>
+              <Link href="/partnerships" className="text-sm font-medium text-gray-600 hover:text-gray-900" aria-label="Partner with us">Partnerships</Link>
               
               {/* Help Dropdown */}
               <div className="relative">
@@ -221,6 +222,13 @@ export default function PublicLayout({
                         onClick={closeMenus}
                       >
                         Blog
+                      </Link>
+                      <Link 
+                        href="/partnerships" 
+                        className="block text-sm text-gray-600 hover:text-gray-900"
+                        onClick={closeMenus}
+                      >
+                        Partnerships
                       </Link>
                     </div>
                   </div>
